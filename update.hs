@@ -28,10 +28,13 @@ import           System.Process
 import           Text.Regex.Applicative
 
 data Env = Env
-  { gitBin   :: FilePath
-  , nixBin   :: FilePath
-  , cacheDir :: FilePath
-  , manager  :: Manager
+  { gitBin      :: FilePath
+  , nixBin      :: FilePath
+  , nixHashBin  :: FilePath
+  , nixBuildBin :: FilePath
+  , cpBin       :: FilePath
+  , cacheDir    :: FilePath
+  , manager     :: Manager
   }
 
 -- | Initializes the read-only environment
@@ -39,6 +42,9 @@ getEnv :: IO Env
 getEnv = Env
   <$> (fromMaybe (error "Can't find git executable") <$> findExecutable "git")
   <*> (fromMaybe (error "Can't find nix-instantiate executable") <$> findExecutable "nix-instantiate")
+  <*> (fromMaybe (error "Can't find nix-hash executable") <$> findExecutable "nix-hash")
+  <*> (fromMaybe (error "Can't find nix-build executable") <$> findExecutable "nix-build")
+  <*> (fromMaybe (error "Can't find cp executable") <$> findExecutable "cp")
   <*> getXdgDirectory XdgCache "all-hies"
   <*> newTlsManager
 
@@ -64,9 +70,13 @@ run = do
 
 setupDirectories :: App ()
 setupDirectories = do
-  cachePath "per-nixpkgs" >>= liftIO . createDirectoryIfMissing True
+  cachePath "per-nixpkgs/ghcVersions" >>= liftIO . createDirectoryIfMissing True
+  cachePath "per-nixpkgs/sha256" >>= liftIO . createDirectoryIfMissing True
   cachePath "per-hie" >>= liftIO . createDirectoryIfMissing True
+  cachePath "per-ghcMinor" >>= liftIO . createDirectoryIfMissing True
   liftIO $ createDirectoryIfMissing True "nixpkgsForGhc"
+  cleanDirectory "ghcBaseLibraries"
+  cleanDirectory "nixpkgsHashes"
 
 -- | Makes sure that the given directory is existent and empty
 cleanDirectory :: FilePath -> App ()
@@ -122,12 +132,48 @@ genS2N hash version = do
   exists <- liftIO $ doesFileExist path
 
   nixpkgsRev <- findNixpkgsForGhc version
+  sha <- nixpkgsSha nixpkgsRev
+  liftIO $ writeFile ("nixpkgsHashes" </> nixpkgsRev) sha
+
+  genBaseLibraries version nixpkgsRev
 
   unless exists $ do
     liftIO $ putStrLn $ "Using nixpkgs revision " ++ nixpkgsRev ++ " for ghc version " ++ show version
     git nixpkgs [ "checkout", nixpkgsRev ]
     callStack2nix hash path version
   return path
+
+genBaseLibraries :: Version -> String -> App ()
+genBaseLibraries version@(Version major minor patch) nixpkgsRev = do
+  cache <- cachePath $ "per-ghcMinor" </> show major ++ show minor
+  exists <- liftIO $ doesFileExist cache
+  unless exists $ do
+    git nixpkgs [ "checkout", nixpkgsRev ]
+    nix <- lift $ asks nixBuildBin
+    ghcPath <- liftIO $ init <$> readProcess nix
+      [ "--no-out-link", "<nixpkgs>", "-A", "haskell.compiler." ++ nixVersion version ] ""
+    libs <- liftIO $ readProcess (ghcPath </> "bin/ghc-pkg")
+      [ "list", "--no-user-package-db", "--simple" ] ""
+    liftIO $ writeFile cache libs
+  liftIO $ copyFile cache ("ghcBaseLibraries" </> nixVersion version)
+
+nixpkgsSha :: String -> App String
+nixpkgsSha revision = do
+  cacheFile <- cachePath $ "per-nixpkgs/sha256" </> revision
+  exists <- liftIO $ doesFileExist cacheFile
+  if exists then liftIO $ readFile cacheFile
+    else do
+    git nixpkgs [ "checkout", revision ]
+    path <- repoPath nixpkgs
+    tmp <- cachePath "tmp"
+    cp <- lift $ asks cpBin
+    liftIO $ readProcess cp ["-rl", path, tmp] ""
+    liftIO $ removeDirectoryRecursive (tmp </> ".git")
+    nixHash <- lift $ asks nixHashBin
+    hash <- liftIO $ head . lines <$> readProcess nixHash ["--type", "sha256", "--base32", tmp] ""
+    liftIO $ writeFile cacheFile hash
+    liftIO $ removeDirectoryRecursive tmp
+    return hash
 
 -- | Finds a suitable nixpkgs revision that has a the specified compiler available
 findNixpkgsForGhc :: Version -> App String
@@ -154,7 +200,7 @@ findNixpkgsForGhc version = do
 -- | Determines the available GHC versions for a nixpkgs revision
 ghcVersionsForNixpkgs :: String -> App [Version]
 ghcVersionsForNixpkgs rev = do
-  path <- cachePath $ "per-nixpkgs" </> rev
+  path <- cachePath $ "per-nixpkgs/ghcVersions" </> rev
   exists <- liftIO $ doesFileExist path
   if exists then do
     contents <- liftIO $ readFile path
@@ -253,7 +299,7 @@ getHistory = do
     response <- liftIO $ responseBody <$> httpLbs (parseRequest_ url) mgr
     -- Because this file is downloaded in the order of oldest to newest
     -- We reverse it for easier processing
-    let items = reverse . map (head . BS.words) $ BS.lines response
+    let items = reverse . ("45e819dd49799d8b680084ed57f6d0633581b957":) . map (head . BS.words) $ BS.lines response
 
     liftIO $ BS.writeFile path $ BS.unlines items
     return $ map BS.unpack items
