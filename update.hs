@@ -1,6 +1,6 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -i runhaskell -I nixpkgs=channel:nixpkgs-unstable
-#!nix-shell -p "haskellPackages.ghcWithPackages (p: with p; [ directory filepath process http-client http-client-tls aeson regex-applicative haskeline stack2nix ])"
+#!nix-shell -p "haskellPackages.ghcWithPackages (p: with p; [ directory filepath process http-client http-client-tls aeson regex-applicative haskeline stack2nix cabal-install ])" -p git -p nix-prefetch-scripts
 
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE NamedFieldPuns    #-}
@@ -66,7 +66,8 @@ run = do
 
   stable <- latestTag hie
   regenerate stable "versions/stable"
-  regenerate "master" "versions/unstable"
+  unstable <- git nixpkgs [ "rev-parse", "master" ]
+  regenerate unstable "versions/unstable"
 
 setupDirectories :: App ()
 setupDirectories = do
@@ -223,8 +224,8 @@ regenerate :: String -> FilePath -> App ()
 regenerate revision genDir = do
   cleanDirectory genDir
   hash <- revHash hie revision
-  liftIO $ putStrLn $ "Writing " ++ hash ++ " to " ++ genDir ++ "/revision"
-  liftIO $ writeFile (genDir </> "revision") hash
+  liftIO $ putStrLn $ "Writing " ++ revision ++ " to " ++ genDir ++ "/revision"
+  liftIO $ writeFile (genDir </> "revision") revision
   git hie [ "checkout", revision ]
   files <- repoPath hie >>= liftIO . listDirectory
   let versions = mapMaybe (stackPathRegex `match`) files

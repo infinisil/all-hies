@@ -37,16 +37,17 @@ let
               # Embed the ghc version into the name
               haskell-ide-engine = haskell.lib.overrideCabal hsuper.haskell-ide-engine (old: {
                 pname = "${old.pname}-${ghcVersion}";
+                version = substring 0 8 (readFile (./versions + "/${name}/revision"));
               });
             }
             // lib.flip genAttrs (name: null)
               (lib.filter (name: name != "ghc" && name != "Cabal")
-                (map (name: (builtins.parseDrvName name).name)
+                (map (name: (parseDrvName name).name)
                   (lib.splitString " "
-                    (builtins.readFile (./ghcBaseLibraries + "/${ghcVersion}")))))
+                    (readFile (./ghcBaseLibraries + "/${ghcVersion}")))))
             )
           )
-          (if builtins.pathExists (./overrides + "/${ghcVersion}.nix") then
+          (if pathExists (./overrides + "/${ghcVersion}.nix") then
             import (./overrides + "/${ghcVersion}.nix")
             else self: super: {}
           );
@@ -68,7 +69,7 @@ let
   lib = pkgs.lib;
 
   parseNixGhcVersion = version:
-    lib.concatStringsSep "." (builtins.match "ghc(.)(.)(.)" version);
+    lib.concatStringsSep "." (match "ghc(.)(.)(.)" version);
 
   combine = versions: let
     wrapperVersion = lib.last (lib.attrNames versions);
@@ -88,7 +89,7 @@ let
 
   inherit (versions) stable unstable;
 
-  makeSet = versions: combine versions // {
+  makeSet = versions: combine versions // rec {
     inherit versions;
     select = selector: makeSet (selector versions);
     minors = mapAttrs (name: makeSet)
@@ -97,6 +98,8 @@ let
           ${minor} = acc.${minor} or {} // { ${el} = versions.${el}; };
         }
       ) {} (lib.attrNames versions));
+    from = mapAttrs (lower: _: makeSet (filterAttrs (version: _: versionAtLeast version lower) versions)) versions;
+    to = mapAttrs (upper: _: makeSet (filterAttrs (version: _: versionAtLeast upper version) versions)) versions;
   };
 
   result = makeSet (unstable // stable) // {
