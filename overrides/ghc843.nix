@@ -1,0 +1,3 @@
+self: super: {
+  Cabal = null;
+}
