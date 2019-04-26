@@ -105,6 +105,8 @@ let
 
   # A set of all ghc versions for all hie versions, like
   # { stable = { ghc864 = <derivation ..>; ... }; unstable = ...; }
+  # Each of which contain binaries hie and hie-$major.$minor.$patch for their
+  # GHC version, along with a hie-wrapper binary that knows about this version
   allVersions =
     let ghcVersionFiles = lib.filterAttrs (file: _: file != "revision")
       (builtins.readDir ./generated/stack2nix);
@@ -115,30 +117,29 @@ let
 
     ) ghcVersionFiles;
 
-  latest = lib.last (lib.attrValues allVersions);
 
   # Combined a set of HIE versions (given as { <ghcVersion> = <derivation>; })
   # into a single derivation which has a binary hie-$major.$minor.$patch for
   # every GHC version, and binaries hie and hie-wrapper containing a binary that
   # automatically selects the correct HIE version out of the available ghc
   # versions
-  combined = versions:
-    # Build an separate derivation to not clutter PATH
-    let env = pkgs.buildEnv {
-        name = "haskell-ide-engine-env";
-        paths = lib.attrValues versions;
-      };
-    in pkgs.runCommandNoCC "haskell-ide-engine-combined" {} ''
-      makeWrapper ${latest}/bin/.hie-wrapper-wrapped $out/bin/hie-wrapper \
-        --suffix PATH : ${env}/bin
-      ln -s hie-wrapper $out/bin/hie
+  combined = versions: pkgs.buildEnv {
+    name = "haskell-ide-engine-combined";
+    paths = lib.attrValues versions;
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      rm $out/bin/hie-wrapper
+      makeWrapper $out/bin/.hie-wrapper-wrapped $out/bin/hie-wrapper \
+        --suffix PATH : $out/bin
+      ln -sf hie-wrapper $out/bin/hie
     '';
+  };
 
 in {
 
   inherit combined;
   versions = allVersions;
   selection = { selector }: combined (selector allVersions);
-  inherit latest;
+  latest = lib.last (lib.attrValues allVersions);
 
 }
