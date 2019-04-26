@@ -1,6 +1,6 @@
 * Haskell IDE Engine Nix builds for all GHC versions
 
-This repository provides Nix builds for [[https://github.com/haskell/haskell-ide-engine][Haskell IDE Engine]] (HIE) for all supported GHC versions. It is intended to be a successor to [[https://github.com/domenkozar/hie-nix][hie-nix]].
+This repository provides Nix builds for [[https://github.com/haskell/haskell-ide-engine][Haskell IDE Engine]] (HIE) for all supported GHC versions. It is intended to be a successor to [[https://github.com/domenkozar/hie-nix][hie-nix]], which only provides a changing subset of versions. This project solves the problem of having mismatched HIE and project GHC versions, which is almost impossible to avoid if you use a globally installed HIE and have many projects.
 
 ** Installation
 
