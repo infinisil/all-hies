@@ -39,7 +39,7 @@ For a specific version of GHC (warning: If you need multiple versions, use the a
   }
 #+END_SRC
 
-For a specific set of GHC versions (note: The ~hie/hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
+For a specific set of GHC versions (note: The ~hie~/~hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
 #+BEGIN_SRC nix
    {
      environment.systemPackages = [
@@ -68,7 +68,7 @@ For a specific version of GHC (warning: If you need multiple versions, use the a
   $ nix-env -iA versions.ghc864 -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
 
-For a specific set of GHC versions (note: The ~hie/hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
+For a specific set of GHC versions (note: The ~hie~/~hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
 #+BEGIN_SRC bash
   $ nix-env -iA selection --arg selector 'p: { inherit (p) ghc864 ghc863 ghc843; }' -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
@@ -89,10 +89,3 @@ If a new stable HIE version has been released, the following commands can be use
 This will take a long time, but both of these commands do a lot of intermediate caching and are idempotent, so they can be interrupted and resumed at any time.
 
 If builds fail for some reason, the ~overrides~ directory can be used to add GHC-specific Haskell overrides.
-
-** TODO
-
-- Add more useful version selection
-  - All versions with a *lower* bound, useful when you know you've updated everything to at least some version
-  - All versions with an *upper* bound, useful when you want to control when you need newer versions yourself
-  - All of the existing selections, but with a constraint to only use the latest patch version
