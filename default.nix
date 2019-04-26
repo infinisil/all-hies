@@ -127,6 +127,7 @@ let
     name = "haskell-ide-engine-combined";
     paths = lib.attrValues versions;
     buildInputs = [ pkgs.makeWrapper ];
+    pathsToLink = [ "/bin" ];
     postBuild = ''
       rm $out/bin/hie-wrapper
       makeWrapper $out/bin/.hie-wrapper-wrapped $out/bin/hie-wrapper \
