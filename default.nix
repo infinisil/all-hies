@@ -25,6 +25,10 @@ let
     versionString = lib.concatStringsSep "."
       (builtins.match "ghc(.)(.)(.)" ghcVersion);
 
+    # The more recent the version, the higher the priority
+    # But higher priorities are lower on the number scale (WHY?), so we need the -
+    versionPriority = - lib.toInt (lib.head (builtins.match "ghc(.*)" ghcVersion));
+
     # Evaluates to a nixpkgs that has the given ghc version in it
     pkgs = let
       rev = builtins.readFile (./nixpkgsForGhc + "/${ghcVersion}");
@@ -60,9 +64,20 @@ let
 
     # Embed the ghc version into the name
     changeName = self: super: {
-      haskell-ide-engine = hlib.overrideCabal super.haskell-ide-engine (old: {
+      haskell-ide-engine = (hlib.overrideCabal super.haskell-ide-engine (old: {
         pname = "${old.pname}-${ghcVersion}";
         version = lib.substring 0 8 revision;
+      })).overrideAttrs (old: {
+        nativeBuildInputs = old.nativeBuildInputs or [] ++ [ pkgs.makeWrapper ];
+        postInstall = old.postInstall or "" + ''
+          ln -s hie $out/bin/hie-${forGhc.versionString}
+          wrapProgram $out/bin/hie-wrapper \
+            --suffix PATH : $out/bin
+        '';
+
+        meta = old.meta // {
+          priority = forGhc.versionPriority;
+        };
       });
     };
 
@@ -97,57 +112,30 @@ let
 
     ) ghcVersionFiles;
 
+  latest = lib.last (lib.attrValues allVersions);
+
   # Combined a set of HIE versions (given as { <ghcVersion> = <derivation>; })
   # into a single derivation which has a binary hie-$major.$minor.$patch for
   # every GHC version, and binaries hie and hie-wrapper containing a binary that
   # automatically selects the correct HIE version out of the available ghc
   # versions
-  combined = nameSuffix: versions: let
-
-    # This shouldn't matter, but let's use the hie-wrapper binary from the most
-    # recent GHC version
-    wrapperVersion = lib.last (lib.attrNames versions);
-
-  in pkgs.runCommandNoCC "haskell-ide-engine-${nameSuffix}" {
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-  } ''
-    mkdir -p $out/bin
-
-    ${lib.concatMapStringsSep "\n" (ghcVersion: ''
-      ln -s ${versions.${ghcVersion}}/bin/hie $out/bin/hie-${(ghcSpecific ghcVersion).versionString}
-    '') (lib.attrNames versions)}
-
-    makeWrapper ${versions.${wrapperVersion}}/bin/hie-wrapper $out/bin/hie-wrapper \
-      --suffix PATH : $out/bin
-
-    ln -s hie-wrapper $out/bin/hie
-  '';
-
-  #inherit (versions) stable unstable;
-
-  #makeSet = versions: combine versions // rec {
-  #  inherit versions;
-  #  latest = versions.${last (attrNames versions)};
-  #  select = selector: makeSet (selector versions);
-  #  minors = mapAttrs (name: makeSet)
-  #    (foldl' (acc: el: let minor = lib.substring 0 (lib.stringLength el - 1) el; in 
-  #      acc // {
-  #        ${minor} = acc.${minor} or {} // { ${el} = versions.${el}; };
-  #      }
-  #    ) {} (lib.attrNames versions));
-  #  from = mapAttrs (lower: _: makeSet (filterAttrs (version: _: versionAtLeast version lower) versions)) versions;
-  #  to = mapAttrs (upper: _: makeSet (filterAttrs (version: _: versionAtLeast upper version) versions)) versions;
-  #};
+  combined = versions:
+    # Build an separate derivation to not clutter PATH
+    let env = pkgs.buildEnv {
+        name = "haskell-ide-engine-env";
+        paths = lib.attrValues versions;
+      };
+    in pkgs.runCommandNoCC "haskell-ide-engine-combined" {} ''
+      makeWrapper ${latest}/bin/.hie-wrapper-wrapped $out/bin/hie-wrapper \
+        --suffix PATH : ${env}/bin
+      ln -s hie-wrapper $out/bin/hie
+    '';
 
 in {
 
-  inherit combined allVersions;
-
-  selection = { selector }: combined "selection"
-    (selector (builtins.intersectAttrs (lib.functionArgs selector) allVersions));
-
-  combos = {
-    all = combined "all" allVersions.stable;
-  };
+  inherit combined;
+  versions = allVersions;
+  selection = { selector }: combined (selector allVersions);
+  inherit latest;
 
 }

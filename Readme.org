@@ -1,0 +1,98 @@
+* Haskell IDE Engine Nix builds for all GHC versions
+
+This repository provides Nix builds for [[https://github.com/haskell/haskell-ide-engine][Haskell IDE Engine]] (HIE) for all supported GHC versions. It is intended to be a successor to [[https://github.com/domenkozar/hie-nix][hie-nix]].
+
+** Installation
+
+*** Cached builds
+
+If you wish to use cached builds, configure the ~all-hies~ cachix cache with [[https://all-hies.cachix.org/][these instructions]], or if you have cachix installed already:
+
+#+BEGIN_SRC bash
+$ cachix use all-hies
+#+END_SRC
+
+*** NixOS installation
+Add this to the start of your ~configuration.nix~:
+#+BEGIN_SRC nix
+  let
+    all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
+  in
+  {
+    # ...
+  }
+#+END_SRC
+
+Then depending on your needs, add the versions you need to `environment.systemPackages`.
+
+For the latest supported GHC version only (which is 8.6.4 right now):
+#+BEGIN_SRC nix
+  {
+    environment.systemPackages = [ all-hies.latest ];
+  }
+#+END_SRC
+
+For a specific version of GHC (warning: If you need multiple versions, use the approach after this one instead):
+#+BEGIN_SRC nix
+  {
+    environment.systemPackages = [ all-hies.versions.ghc864 ];
+  }
+#+END_SRC
+
+For a specific set of GHC versions (note: The ~hie/hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
+#+BEGIN_SRC nix
+   {
+     environment.systemPackages = [
+       (all-hies.selection { selector = p: { inherit (p) ghc864 ghc863 ghc843; }; })
+     ];
+   }
+#+END_SRC
+
+For *all* supported GHC versions (warning: requires ~20GB of space for all 9 versions):
+#+BEGIN_SRC nix
+  {
+    environment.systemPackages = [
+      (all-hies.selection { selector = p: p; })
+    ];
+  }
+#+END_SRC
+
+*** ~nix-env~ installation
+For the latest supported GHC version only (which is 8.6.4 right now):
+#+BEGIN_SRC bash
+  $ nix-env -iA latest -f https://github.com/infinisil/all-hies/tarball/master
+#+END_SRC
+
+For a specific version of GHC (warning: If you need multiple versions, use the approach after this one instead):
+#+BEGIN_SRC bash
+  $ nix-env -iA versions.ghc864 -f https://github.com/infinisil/all-hies/tarball/master
+#+END_SRC
+
+For a specific set of GHC versions (note: The ~hie/hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
+#+BEGIN_SRC bash
+  $ nix-env -iA selection --arg selector 'p: { inherit (p) ghc864 ghc863 ghc843; }' -f https://github.com/infinisil/all-hies/tarball/master
+#+END_SRC
+
+For *all* supported GHC versions (warning: requires ~20GB of space for all 9 versions):
+#+BEGIN_SRC bash
+  $ nix-env -iA selection --arg selector 'p: p' -f https://github.com/infinisil/all-hies/tarball/master
+#+END_SRC
+
+** Updating this repository
+
+If a new stable HIE version has been released, the following commands can be used to update the repository with it and build all versions
+#+BEGIN_SRC bash
+  $ ./update.hs
+  $ nix-build -A versions -k
+#+END_SRC
+
+This will take a long time, but both of these commands do a lot of intermediate caching and are idempotent, so they can be interrupted and resumed at any time.
+
+If builds fail for some reason, the ~overrides~ directory can be used to add GHC-specific Haskell overrides.
+
+** TODO
+
+- Add more useful version selection
+  - All versions with a *lower* bound, useful when you know you've updated everything to at least some version
+  - All versions with an *upper* bound, useful when you want to control when you need newer versions yourself
+  - All of the existing selections, but with a constraint to only use the latest patch version
