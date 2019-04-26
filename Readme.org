@@ -23,7 +23,7 @@ Add this to the start of your ~configuration.nix~:
   }
 #+END_SRC
 
-Then depending on your needs, add the versions you need to `environment.systemPackages`.
+Then depending on your needs, add the versions you need to ~environment.systemPackages~:
 
 For the latest supported GHC version only (which is 8.6.4 right now):
 #+BEGIN_SRC nix
