@@ -62,19 +62,22 @@ let
     hlib = forGhc.pkgs.haskell.lib;
     revision = builtins.readFile ./generated/stack2nix/revision;
 
-    # Embed the ghc version into the name
-    changeName = self: super: {
+    hieOverride = self: super: {
       haskell-ide-engine = (hlib.overrideCabal super.haskell-ide-engine (old: {
+        # Embed the ghc version into the name
         pname = "${old.pname}-${ghcVersion}";
         version = lib.substring 0 8 revision;
       })).overrideAttrs (old: {
         nativeBuildInputs = old.nativeBuildInputs or [] ++ [ pkgs.makeWrapper ];
+        # Make sure hie-x.x.x binary exists
+        # And make sure hie-wrapper finds this version
         postInstall = old.postInstall or "" + ''
           ln -s hie $out/bin/hie-${forGhc.versionString}
           wrapProgram $out/bin/hie-wrapper \
             --suffix PATH : $out/bin
         '';
 
+        # Assign a priority for allowing multiple versions to be installed at once
         meta = old.meta // {
           priority = forGhc.versionPriority;
         };
@@ -85,7 +88,7 @@ let
       overrides = composeMultiple [
         (old.overrides or (self: super: {}))
         speedierBuilds
-        changeName
+        hieOverride
         forGhc.baseLibraryNuller
         forGhc.customOverrides
       ];
