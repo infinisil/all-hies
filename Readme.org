@@ -6,11 +6,13 @@ This repository provides Nix builds for [[https://github.com/haskell/haskell-ide
 
 *** Cached builds
 
-If you wish to use cached builds, configure the ~all-hies~ cachix cache with [[https://all-hies.cachix.org/][these instructions]], or if you have cachix installed already:
+If you are using x86_64 Linux and wish to use cached builds, you can configure the ~all-hies~ cachix cache with [[https://all-hies.cachix.org/][these instructions]], or if you have cachix installed already:
 
 #+BEGIN_SRC bash
 cachix use all-hies
 #+END_SRC
+
+Darwin does not have caches at the moment.
 
 *** NixOS installation
 Add this to the start of your ~configuration.nix~:
