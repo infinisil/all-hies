@@ -39,7 +39,7 @@ For a specific version of GHC (warning: If you need multiple versions, use the a
   }
 #+END_SRC
 
-For a specific set of GHC versions (note: The ~hie~/~hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
+For a specific set of GHC versions (note: The ~hie~ / ~hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
 #+BEGIN_SRC nix
    {
      environment.systemPackages = [
@@ -68,7 +68,7 @@ For a specific version of GHC (warning: If you need multiple versions, use the a
   $ nix-env -iA versions.ghc864 -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
 
-For a specific set of GHC versions (note: The ~hie~/~hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
+For a specific set of GHC versions (note: The ~hie~ / ~hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
 #+BEGIN_SRC bash
   $ nix-env -iA selection --arg selector 'p: { inherit (p) ghc864 ghc863 ghc843; }' -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
