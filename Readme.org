@@ -50,7 +50,7 @@ For a specific set of GHC versions (note: The ~hie~ / ~hie-wrapper~ binaries wil
    }
 #+END_SRC
 
-For *all* supported GHC versions (warning: requires ~20GB of space for all 9 versions):
+For *all* supported GHC versions (warning: requires ~30GB (or <10GB with compression) of space for all 9 versions):
 #+BEGIN_SRC nix
   {
     environment.systemPackages = [
@@ -75,7 +75,7 @@ For a specific set of GHC versions (note: The ~hie~ / ~hie-wrapper~ binaries wil
   nix-env -iA selection --arg selector 'p: { inherit (p) ghc864 ghc863 ghc843; }' -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
 
-For *all* supported GHC versions (warning: requires ~20GB of space for all 9 versions):
+For *all* supported GHC versions (warning: requires ~30GB (or <10GB with compression) of space for all 9 versions):
 #+BEGIN_SRC bash
   nix-env -iA selection --arg selector 'p: p' -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
