@@ -67,6 +67,15 @@ let
         # Embed the ghc version into the name
         pname = "${old.pname}-${ghcVersion}";
         version = lib.substring 0 8 revision;
+
+        # Link Haskell libraries dynamically, improves startup time for projects
+        # using TH by a lot (40x faster in one of my tests), but also Increases
+        # closure size by about 50% (=~ 1.2GB) per HIE version
+        # Can be disabled again for GHC versions that have a fix for
+        # https://gitlab.haskell.org/ghc/ghc/issues/15524
+        enableSharedExecutables = true;
+        isLibrary = false;
+        doHaddock = false;
       })).overrideAttrs (old: {
         nativeBuildInputs = old.nativeBuildInputs or [] ++ [ pkgs.makeWrapper ];
         # Make sure hie-x.x.x binary exists
@@ -98,9 +107,7 @@ let
       pkgs = forGhc.pkgs;
     };
 
-    build = hlib.justStaticExecutables
-      (expr.override overrideFun).haskell-ide-engine;
-
+    build = (expr.override overrideFun).haskell-ide-engine;
   in build;
 
   # A set of all ghc versions for all hie versions, like
