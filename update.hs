@@ -10,7 +10,7 @@ import           Control.Exception          (handleJust)
 import           Control.Monad.Reader
 import           Data.Aeson                 (decode)
 import qualified Data.ByteString.Lazy.Char8 as BS
-import           Data.Char                  (isDigit)
+import           Data.Char                  (isDigit, isHexDigit)
 import           Data.List                  (intercalate)
 import           Data.Maybe
 import           Data.Time
@@ -221,7 +221,7 @@ regenerate revision genDir = do
   hash <- revHash hie revision
   liftIO $ putStrLn $ "Writing " ++ revision ++ " to " ++ genDir ++ "/revision"
   liftIO $ writeFile (genDir </> "revision") revision
-  git hie [ "checkout", revision ]
+  git hie [ "checkout", if all isHexDigit revision then revision else "origin/" ++ revision ]
   files <- repoPath hie >>= liftIO . listDirectory
   let versions = mapMaybe (stackPathRegex `match`) files
   liftIO $ putStrLn $ "HIE " ++ revision ++ " has ghc versions " ++ intercalate ", " (map show versions)
