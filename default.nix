@@ -125,21 +125,58 @@ let
     ) ghcVersionFiles;
 
 
-  # Combined a set of HIE versions (given as { <ghcVersion> = <derivation>; })
-  # into a single derivation which has a binary hie-$major.$minor.$patch for
-  # every GHC version, and binaries hie and hie-wrapper containing a binary that
-  # automatically selects the correct HIE version out of the available ghc
-  # versions
+  # Combine a set of HIE versions (given as { <ghcVersion> = <derivation>; })
+  # into a single derivation with the following binaries:
+  # - hie-*.*.*: The GHC specific HIE versions, such as ghc-8.6.4
+  # - hie-wrapper: A HIE version that selects the appropriate version
+  #     automatically out of the given ones
+  # - hie: Same as hie-wrapper, provided for easy editor integration
   combined = versions: pkgs.buildEnv {
     name = "haskell-ide-engine-combined";
     paths = lib.attrValues versions;
     buildInputs = [ pkgs.makeWrapper ];
     pathsToLink = [ "/bin" ];
+    extraPrefix = "/libexec";
     postBuild = ''
-      rm $out/bin/hie-wrapper
-      makeWrapper $out/bin/.hie-wrapper-wrapped $out/bin/hie-wrapper \
-        --suffix PATH : $out/bin
-      ln -sf hie-wrapper $out/bin/hie
+      # Remove hie/hie-wrapper in /libexec/bin because those are both just PATH
+      # wrapped versions. Move the actual hie-wrapper to $out/bin
+      rm $out/libexec/bin/{hie,hie-wrapper}
+      mkdir -p $out/bin
+      mv $out/libexec/bin/.hie-wrapper-wrapped $out/bin/hie-wrapper
+
+      # Now /libexec/bin only contains binaries hie-*.*.*. Link all of them to
+      # $out/bin such that users installing this directly can access these
+      # specific versions too in $PATH
+      for bin in $out/libexec/bin/*; do
+        ln -s ../libexec/bin/$(basename $bin) $out/bin/$(basename $bin)
+      done
+
+      # Because we don't want hie-wrapper to fall back to hie binaries later in
+      # PATH (because if this derivation is installed, a later hie might be
+      # hie-wrapper itself, leading to infinite process recursion), we provide
+      # our own hie binary instead, which will only be called if it couldn't
+      # find any appropriate hie-*.*.* binary, in which case the user needs to
+      # adjust their all-hies installation to make that one available.
+      cat > $out/libexec/bin/hie << EOF
+        #!${pkgs.runtimeShell}
+        echo "hie-wrapper couldn't find a HIE binary with a matching GHC" \
+          "version in your all-hies installation" >&2
+        exit 1
+      EOF
+      chmod +x $out/libexec/bin/hie
+
+      # Wrap hie-wrapper with PATH prefixed with /libexec/bin, such
+      # that it can find all those binaries. Not --suffix because
+      # hie-wrapper needs to find our hie binary first and foremost as per
+      # above comment, also makes it more reproducible. Not --set because hie
+      # needs to find binaries for cabal/ghc and such.
+      wrapProgram $out/bin/hie-wrapper \
+        --prefix PATH : $out/libexec/bin
+
+      # Make hie-wrapper available as hie as well, in order to minimize the need
+      # for customizing editors, and to override a potential hie binary from
+      # another derivation in the same environment.
+      ln -s hie-wrapper $out/bin/hie
     '';
   };
 
