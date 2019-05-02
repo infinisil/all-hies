@@ -90,12 +90,14 @@ cleanDirectory path = liftIO $ do
 -- | Returns the newest tag in the given repository
 latestTag :: Repository -> App String
 latestTag repo = do
-  tags <- lines <$> git repo [ "tag", "--sort", "taggerdate" ]
+  -- TODO: Use git ls-remote --tags --sort=creatordate --refs instead?
+  tags <- lines <$> git repo [ "tag", "--sort", "creatordate" ]
   return $ last tags
 
 -- | Returns the git hash for a specified revision in the given repository
 revHash :: Repository -> String -> App String
-revHash repo rev = init <$> git repo [ "rev-parse", rev ]
+revHash (Repository url) rev = liftIO $ head . words . head . lines
+  <$> readProcess "git" [ "ls-remote", url, rev ] ""
 
 cachePath :: FilePath -> App FilePath
 cachePath sub = do
@@ -221,7 +223,7 @@ regenerate revision genDir = do
   hash <- revHash hie revision
   liftIO $ putStrLn $ "Writing " ++ revision ++ " to " ++ genDir ++ "/revision"
   liftIO $ writeFile (genDir </> "revision") revision
-  git hie [ "checkout", if all isHexDigit revision then revision else "origin/" ++ revision ]
+  git hie [ "checkout", hash ]
   files <- repoPath hie >>= liftIO . listDirectory
   let versions = mapMaybe (stackPathRegex `match`) files
   liftIO $ putStrLn $ "HIE " ++ revision ++ " has ghc versions " ++ intercalate ", " (map show versions)
