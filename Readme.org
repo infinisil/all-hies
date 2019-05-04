@@ -1,18 +1,16 @@
-* Haskell IDE Engine Nix builds for all GHC versions
+* Cached Haskell IDE Engine Nix builds for all GHC versions
 
-This repository provides Nix builds for [[https://github.com/haskell/haskell-ide-engine][Haskell IDE Engine]] (HIE) for all supported GHC versions. It is intended to be a successor to [[https://github.com/domenkozar/hie-nix][hie-nix]], which only provides a changing subset of versions. This project solves the problem of having mismatched HIE and project GHC versions, which is almost impossible to avoid if you use a globally installed HIE and have many projects.
+This repository provides cached Nix builds for the latest stable [[https://github.com/haskell/haskell-ide-engine][Haskell IDE Engine]] (HIE) for all supported GHC versions. It is intended to be a successor to [[https://github.com/domenkozar/hie-nix][hie-nix]], which only provides a changing subset of versions. This project solves the problem of having mismatched HIE and project GHC versions, which is almost impossible to avoid if you use a globally installed HIE and have many projects.
 
 ** Installation
 
 *** Cached builds
 
-If you are using x86_64 Linux and wish to use cached builds, you can configure the ~all-hies~ cachix cache with [[https://all-hies.cachix.org/][these instructions]], or if you have cachix installed already:
+If you wish to use prebuilt binaries, available on both Linux and macOS, configure the ~all-hies~ cache with [[https://all-hies.cachix.org/][these instructions]], or if you have cachix installed already:
 
 #+BEGIN_SRC bash
 cachix use all-hies
 #+END_SRC
-
-Darwin does not have caches at the moment.
 
 *** NixOS installation
 Add this to the start of your ~configuration.nix~:

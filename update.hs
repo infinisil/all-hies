@@ -295,7 +295,7 @@ getHistory = do
     response <- liftIO $ responseBody <$> httpLbs (parseRequest_ url) mgr
     -- Because this file is downloaded in the order of oldest to newest
     -- We reverse it for easier processing
-    let items = reverse . ("45e819dd49799d8b680084ed57f6d0633581b957":) . map (head . BS.words) $ BS.lines response
+    let items = reverse . ("c47ac0d8bf43543d8dcef4895167dd1f7af9d968":) . map (head . BS.words) $ BS.lines response
 
     liftIO $ BS.writeFile path $ BS.unlines items
     return $ map BS.unpack items
