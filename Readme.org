@@ -80,6 +80,8 @@ For *all* supported GHC versions (warning: requires ~30GB (or <10GB with compres
 
 ** Updating this repository
 
+This section is only for all-hies developers and not intended for end users.
+
 If a new stable HIE version has been released, the following commands can be used to update the repository with it and build all versions
 #+BEGIN_SRC bash
   nix-build update.nix
@@ -87,7 +89,13 @@ If a new stable HIE version has been released, the following commands can be use
   nix-build -A versions -k
 #+END_SRC
 
-This will take a long time, but both of these commands do a lot of intermediate caching and are idempotent, so they can be interrupted and resumed at any time. If builds fail for some reason, the ~overrides~ directory can be used to add GHC-specific Haskell overrides.
+Or if you wish to use a different hie revision like master:
+
+#+BEGIN_SRC bash
+  result/bin/update master
+#+END_SRC
+
+This will take a long time, but these commands do a lot of intermediate caching and are idempotent, so they can be interrupted and resumed at any time. If builds fail for some reason, the ~overrides~ directory can be used to add GHC-specific Haskell overrides.
 
 Depending on the amount of RAM you have, the above ~nix-build~ command can lead to a lot of thrashing, because Nix interleaves all dependencies from all different GHC versions, which means its working memory is about $number-of-versions * $size-of-ghc. To avoid this, build each version in a series of commands instead (or only k versions at a time). Because there's a lot of dependencies, you might also want to use `--max-jobs auto --cores 1`, in order to approximate maximal processor usage and minimize build time.
 

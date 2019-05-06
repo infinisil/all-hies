@@ -66,7 +66,7 @@ let
       haskell-ide-engine = (hlib.overrideCabal super.haskell-ide-engine (old: {
         # Embed the ghc version into the name
         pname = "${old.pname}-${ghcVersion}";
-        version = lib.substring 0 8 revision;
+        version = revision;
 
         # Link Haskell libraries dynamically, improves startup time for projects
         # using TH by a lot (40x faster in one of my tests), but also Increases

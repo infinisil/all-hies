@@ -11,7 +11,7 @@ import           Control.Monad.Reader
 import           Data.Aeson                 (decode)
 import qualified Data.ByteString.Lazy.Char8 as BS
 import           Data.Char                  (isDigit, isHexDigit)
-import           Data.List                  (intercalate)
+import           Data.List                  (intercalate, isPrefixOf)
 import           Data.Maybe
 import           Data.Time
 import           Distribution.System        (Arch (..), OS (..), Platform (..))
@@ -20,7 +20,7 @@ import           Network.HTTP.Client.TLS
 import           Stack2nix
 import           System.Console.Haskeline   hiding (getHistory)
 import           System.Directory
-import           System.Environment         (setEnv)
+import           System.Environment         (getArgs, setEnv)
 import           System.Exit                (ExitCode (..))
 import           System.FilePath
 import           System.Process
@@ -54,7 +54,8 @@ run = do
   setupDirectories
 
   stable <- latestTag hie
-  regenerate stable dirStack2Nix
+  revision <- fromMaybe stable . listToMaybe <$> liftIO getArgs
+  regenerate revision dirStack2Nix
 
 cfileChannelHistory = "history-nixpkgs-unstable"
 cdirPerNixpkgsGhcVersions = "per-nixpkgs/ghcVersions"
@@ -95,9 +96,13 @@ latestTag repo = do
   return $ last tags
 
 -- | Returns the git hash for a specified revision in the given repository
-revHash :: Repository -> String -> App String
-revHash (Repository url) rev = liftIO $ head . words . head . lines
-  <$> readProcess "git" [ "ls-remote", url, rev ] ""
+revHash :: Repository -> String -> App (String, String)
+revHash (Repository url) rev = do
+  result <- liftIO $ lines <$> readProcess "git" [ "ls-remote", url, rev ] ""
+  case result of
+    [] -> fail $ "No such revision: " ++ rev
+    line:_ -> return (hash, ref) where
+      [hash, ref] = words line
 
 cachePath :: FilePath -> App FilePath
 cachePath sub = do
@@ -220,13 +225,16 @@ ghcVersionsForNixpkgs rev = do
 -- | Regenerate the specified HIE revision stack2nix files in the given path
 regenerate :: String -> FilePath -> App ()
 regenerate revision genDir = do
-  hash <- revHash hie revision
-  liftIO $ putStrLn $ "Writing " ++ revision ++ " to " ++ genDir ++ "/revision"
-  liftIO $ writeFile (genDir </> "revision") revision
+  (hash, ref) <- revHash hie revision
+  let revName = if "refs/heads/" `isPrefixOf` ref
+        then take 10 hash else revision
+  liftIO $ putStrLn $ "Regenerating for revision " ++ revName ++ " (" ++ hash ++ ")"
+  liftIO $ putStrLn $ "Writing " ++ revName ++ " to " ++ genDir ++ "/revision"
+  liftIO $ writeFile (genDir </> "revision") revName
   git hie [ "checkout", hash ]
   files <- repoPath hie >>= liftIO . listDirectory
   let versions = mapMaybe (stackPathRegex `match`) files
-  liftIO $ putStrLn $ "HIE " ++ revision ++ " has ghc versions " ++ intercalate ", " (map show versions)
+  liftIO $ putStrLn $ "HIE " ++ revName ++ " has ghc versions " ++ intercalate ", " (map show versions)
   forM_ versions $ \version -> do
     file <- genS2N hash version
     liftIO $ copyFile file $ genDir </> nixVersion version ++ ".nix"
