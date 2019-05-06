@@ -1,0 +1,23 @@
+cabal-version:       2.4
+name:                all-hies
+version:             0.1.0.0
+author:              Silvan Mosberger
+maintainer:          infinisil@icloud.com
+
+executable update
+  main-is:             update.hs
+  build-depends:       base ^>=4.12.0.0
+                     , haskeline
+                     , process
+                     , regex-applicative
+                     , directory
+                     , filepath
+                     , stack2nix
+                     , http-client
+                     , http-client-tls
+                     , time
+                     , aeson
+                     , mtl
+                     , bytestring
+                     , Cabal
+  default-language:    Haskell2010

@@ -1,25 +1,9 @@
 { pkgs ? import ./nixpkgs.nix
 }:
-
-let
-  ghcWithPkgs = pkgs.haskellPackages.ghcWithPackages (p: with p; [
-    directory
-    filepath
-    process
-    http-client
-    http-client-tls
-    aeson
-    regex-applicative
-    haskeline
-    stack2nix
-    cabal-install
-  ]);
-in
-
-pkgs.mkShell {
-  buildInputs = with pkgs; [
-    ghcWithPkgs
-    git
-    nix-prefetch-scripts
+(pkgs.haskellPackages.callCabal2nix "all-hies" ./. {}).env.overrideAttrs (old: {
+  nativeBuildInputs = old.nativeBuildInputs or [] ++ [
+    pkgs.nix-prefetch-scripts
+    pkgs.git
+    pkgs.haskellPackages.cabal-install
   ];
-}
+})
