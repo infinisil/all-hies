@@ -7,6 +7,7 @@ let
     pkgs.nix-prefetch-scripts
     pkgs.git
     pkgs.haskellPackages.cabal-install
+    pkgs.nix
   ];
   pkg = (hpkgs.callCabal2nix "all-hies" (pkgs.lib.sourceByRegex ./. [
     "update.hs"
