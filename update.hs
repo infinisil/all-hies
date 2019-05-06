@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i runhaskell shell.nix
+#!nix-shell --pure -i runhaskell
 
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE NamedFieldPuns    #-}
