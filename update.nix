@@ -3,9 +3,10 @@
 let
   inherit (pkgs) lib;
   hpkgs = pkgs.haskellPackages;
-  path = lib.makeBinPath [
+  runtimeDeps = [
     pkgs.nix-prefetch-scripts
     pkgs.git
+    pkgs.haskellPackages.cabal-install
   ];
   pkg = (hpkgs.callCabal2nix "all-hies" (pkgs.lib.sourceByRegex ./. [
     "update.hs"
@@ -16,15 +17,11 @@ let
     ];
     postInstall = old.postInstall or "" + ''
       wrapProgram $out/bin/update \
-        --set PATH "${path}"
+        --set PATH "${lib.makeBinPath runtimeDeps}"
     '';
   });
 in pkg // {
   env = pkg.env.overrideAttrs (old: {
-    nativeBuildInputs = old.nativeBuildInputs or [] ++ [
-      pkgs.nix-prefetch-scripts
-      pkgs.git
-      pkgs.haskellPackages.cabal-install
-    ];
+    nativeBuildInputs = old.nativeBuildInputs or [] ++ runtimeDeps;
   });
 }
