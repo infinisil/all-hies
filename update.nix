@@ -8,6 +8,8 @@ let
     pkgs.git
     pkgs.haskellPackages.cabal-install
     pkgs.nix
+    pkgs.coreutils
+    pkgs.gawk
   ];
   pkg = (hpkgs.callCabal2nix "all-hies" (pkgs.lib.sourceByRegex ./. [
     "update.hs"
