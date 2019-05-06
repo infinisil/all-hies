@@ -82,7 +82,8 @@ For *all* supported GHC versions (warning: requires ~30GB (or <10GB with compres
 
 If a new stable HIE version has been released, the following commands can be used to update the repository with it and build all versions
 #+BEGIN_SRC bash
-  ./update.hs
+  nix-build update.nix
+  result/bin/update
   nix-build -A versions -k
 #+END_SRC
 
