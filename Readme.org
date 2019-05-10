@@ -12,6 +12,8 @@ If you wish to use prebuilt binaries, available on both Linux and macOS, configu
 cachix use all-hies
 #+END_SRC
 
+Note: Due to an issue with cachix you might have to restart the nix daemon for this to take effect, refer to [[https://github.com/cachix/cachix/issues/188][this issue]].
+
 *** NixOS installation
 Add this to the start of your ~configuration.nix~:
 #+BEGIN_SRC nix
