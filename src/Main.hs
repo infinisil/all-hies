@@ -1,7 +1,3 @@
-#!/usr/bin/env nix-shell
-#!nix-shell --pure -i runhaskell
-
-{-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ViewPatterns      #-}
@@ -23,8 +19,12 @@ import           System.Directory
 import           System.Environment         (getArgs, setEnv)
 import           System.Exit                (ExitCode (..))
 import           System.FilePath
+import           System.IO                  (hClose)
+import           System.IO.Temp
 import           System.Process
 import           Text.Regex.Applicative
+
+import qualified Cache
 
 data Env = Env
   { cacheDir :: FilePath
@@ -51,32 +51,19 @@ run = do
   updateRepo nixpkgs
 
   repoPath nixpkgs >>= \path -> liftIO $ setEnv "NIX_PATH" ("nixpkgs=" ++ path)
-  setupDirectories
+  cleanGenerated
 
   stable <- latestTag hie
   revision <- fromMaybe stable . listToMaybe <$> liftIO getArgs
-  regenerate revision dirStack2Nix
+  regenerate (dirGenerated </> "stack2nix") revision
 
-cfileChannelHistory = "history-nixpkgs-unstable"
-cdirPerNixpkgsGhcVersions = "per-nixpkgs/ghcVersions"
-cdirPerNixpkgsSha256 = "per-nixpkgs/sha256"
-cdirPerHie = "per-hie"
-cdirPerGhcMinor = "per-ghcMinor"
-dirNixpkgsForGhc = "nixpkgsForGhc"
 dirGenerated = "generated"
-dirStack2Nix = dirGenerated </> "stack2nix"
 dirNixpkgsHashes = dirGenerated </> "nixpkgsHashes"
 dirGhcBaseLibraries = dirGenerated </> "ghcBaseLibraries"
 
-setupDirectories :: App ()
-setupDirectories = do
-  cachePath cdirPerNixpkgsGhcVersions >>= liftIO . createDirectoryIfMissing True
-  cachePath cdirPerNixpkgsSha256 >>= liftIO . createDirectoryIfMissing True
-  cachePath cdirPerHie >>= liftIO . createDirectoryIfMissing True
-  cachePath cdirPerGhcMinor >>= liftIO . createDirectoryIfMissing True
-  liftIO $ createDirectoryIfMissing True dirNixpkgsForGhc
+cleanGenerated :: App ()
+cleanGenerated = do
   cleanDirectory dirGenerated
-  liftIO $ createDirectory dirStack2Nix
   liftIO $ createDirectory dirNixpkgsHashes
   liftIO $ createDirectory dirGhcBaseLibraries
 
@@ -104,40 +91,36 @@ revHash (Repository url) rev = do
     line:_ -> return (hash, ref) where
       [hash, ref] = words line
 
-cachePath :: FilePath -> App FilePath
-cachePath sub = do
-  cache <- lift $ asks cacheDir
-  return $ cache </> sub
-
 -- | A call to stack2nix for generating a haskell-ide-engine expression at a specified path, for a specific revision and ghc version
-callStack2nix :: String -> FilePath -> Version -> App ()
-callStack2nix rev output version = liftIO $ do
+callStack2nix :: String -> Version -> App BS.ByteString
+callStack2nix rev version = liftIO $ do
   let (Repository repo) = hie
-  createDirectoryIfMissing True (takeDirectory output)
 
-  putStrLn $ "Running stack2nix to generate " ++ output ++ " for hie revision " ++ rev ++ " and ghc version " ++ show version
+  putStrLn $ "Running stack2nix for hie revision " ++ rev ++ " and ghc version " ++ show version
 
-  handleJust (\e -> if e == ExitSuccess then Just () else Nothing) return $
-    stack2nix Args
-      { argRev = Just rev
-      , argOutFile = Just output
-      , argStackYaml = "stack-" ++ show version ++ ".yaml"
-      , argThreads = 4
-      , argTest = False
-      , argBench = False
-      , argHaddock = False
-      , argHackageSnapshot = Nothing
-      , argPlatform = Platform X86_64 Linux
-      , argUri = repo
-      , argIndent = True
-      , argVerbose = False
-      }
+  withSystemTempFile "all-hies-stack2nix" $ \path handle -> do
+    hClose handle
+    handleJust (\e -> if e == ExitSuccess then Just () else Nothing) return $
+      stack2nix Args
+        { argRev = Just rev
+        , argOutFile = Just path
+        , argStackYaml = "stack-" ++ show version ++ ".yaml"
+        , argThreads = 4
+        , argTest = False
+        , argBench = False
+        , argHaddock = False
+        , argHackageSnapshot = Nothing
+        , argPlatform = Platform X86_64 Linux
+        , argUri = repo
+        , argIndent = True
+        , argVerbose = False
+        }
+    BS.readFile path
+
 
 -- | Generate the stack2nix file for the specified HIE git hash and ghc version
-genS2N :: String -> Version -> App FilePath
+genS2N :: String -> Version -> App BS.ByteString
 genS2N hash version = do
-  path <- cachePath $ cdirPerHie </> hash </> nixVersion version ++ ".nix"
-  exists <- liftIO $ doesFileExist path
 
   nixpkgsRev <- findNixpkgsForGhc version
   sha <- nixpkgsSha nixpkgsRev
@@ -145,56 +128,51 @@ genS2N hash version = do
 
   genBaseLibraries version nixpkgsRev
 
-  unless exists $ do
+  Cache.get Cache.ExpiresNever ("per-hie" </> hash </> nixVersion version <.> ".nix") $ do
     liftIO $ putStrLn $ "Using nixpkgs revision " ++ nixpkgsRev ++ " for ghc version " ++ show version
     git nixpkgs [ "checkout", nixpkgsRev ]
-    callStack2nix hash path version
-  return path
+    callStack2nix hash version
 
 genBaseLibraries :: Version -> String -> App ()
 genBaseLibraries version@(Version major minor patch) nixpkgsRev = do
-  cache <- cachePath $ cdirPerGhcMinor </> show major ++ show minor
-  exists <- liftIO $ doesFileExist cache
-  unless exists $ do
+  contents <- Cache.get Cache.ExpiresNever ("per-ghcMinor" </> show major ++ show minor) $ do
     git nixpkgs [ "checkout", nixpkgsRev ]
     ghcPath <- liftIO $ init <$> readProcess "nix-build"
       [ "--no-out-link", "<nixpkgs>", "-A", "haskell.compiler." ++ nixVersion version ] ""
     libs <- liftIO $ readProcess (ghcPath </> "bin/ghc-pkg")
       [ "list", "--no-user-package-db", "--simple" ] ""
-    liftIO $ writeFile cache libs
-  liftIO $ copyFile cache (dirGhcBaseLibraries </> nixVersion version)
+    return $ BS.pack libs
+
+  liftIO $ BS.writeFile (dirGhcBaseLibraries </> nixVersion version) contents
 
 nixpkgsSha :: String -> App String
 nixpkgsSha revision = do
-  cacheFile <- cachePath $ cdirPerNixpkgsSha256 </> revision
-  exists <- liftIO $ doesFileExist cacheFile
-  if exists then liftIO $ readFile cacheFile
-    else do
+  hash <- Cache.get Cache.ExpiresNever ("per-nixpkgs/sha256" </> revision) $ do
     git nixpkgs [ "checkout", revision ]
     path <- repoPath nixpkgs
-    tmp <- cachePath "tmp"
-    liftIO $ readProcess "cp" ["-rl", path, tmp] ""
-    liftIO $ removeDirectoryRecursive (tmp </> ".git")
-    hash <- liftIO $ head . lines <$> readProcess "nix-hash" ["--type", "sha256", "--base32", tmp] ""
-    liftIO $ writeFile cacheFile hash
-    liftIO $ removeDirectoryRecursive tmp
-    return hash
+
+    -- tmp needs to be next to nixpkgs itself (same file system), such that hardlinking works, which makes it very efficient
+    tmpCache <- lift $ (</> "tmp") <$> asks cacheDir
+    liftIO $ createDirectoryIfMissing True tmpCache
+    liftIO $ withTempDirectory tmpCache "all-hies-nixpkgs-sha256" $ \tmp -> do
+      liftIO $ readProcess "cp" ["-Trl", path, tmp] ""
+      liftIO $ removeDirectoryRecursive (tmp </> ".git")
+      hash <- liftIO $ head . lines <$> readProcess "nix-hash" ["--type", "sha256", "--base32", tmp] ""
+      return $ BS.pack hash
+
+  return $ BS.unpack hash
 
 -- | Finds a suitable nixpkgs revision that has a the specified compiler available
 findNixpkgsForGhc :: Version -> App String
 findNixpkgsForGhc version = do
-  exists <- liftIO $ doesFileExist path
-  if exists then liftIO $ readFile path
-  else do
+  contents <- Cache.getLocal Cache.ExpiresNever ("nixpkgsForGhc" </> nixVersion version) $ do
     hist <- getHistory
     revision <- go hist
-    liftIO $ writeFile path revision
-    return revision
+    return $ BS.pack revision
+
+  return $ BS.unpack contents
 
   where
-    path :: FilePath
-    path = dirNixpkgsForGhc </> nixVersion version
-
     go :: Hist -> App String
     go [] = fail $ "Couldn't find a nixpkgs for ghc version " ++ show version
     go (h:hist) = do
@@ -205,12 +183,7 @@ findNixpkgsForGhc version = do
 -- | Determines the available GHC versions for a nixpkgs revision
 ghcVersionsForNixpkgs :: String -> App [Version]
 ghcVersionsForNixpkgs rev = do
-  path <- cachePath $ cdirPerNixpkgsGhcVersions </> rev
-  exists <- liftIO $ doesFileExist path
-  if exists then do
-    contents <- liftIO $ readFile path
-    return $ catMaybes . map (versionRegex `match`) . lines $ contents
-    else do
+  contents <- Cache.get Cache.ExpiresNever "per-nixpkgs/ghcVersions" $ do
     git nixpkgs [ "checkout", rev ]
     nixpkgs <- repoPath nixpkgs
     stdout <- liftIO $ readProcess "nix-instantiate" [ "--eval", "--json", "-" ]
@@ -218,13 +191,16 @@ ghcVersionsForNixpkgs rev = do
     case decode (BS.pack stdout) :: Maybe [String] of
       Nothing -> fail $ "Failed to decode nix output: " ++ stdout
       Just versions' -> do
-        let versions = catMaybes $ map (nixVersionRegex `match`) versions'
-        liftIO $ writeFile path $ unlines $ map show versions
-        return versions
+        let versions = mapMaybe (nixVersionRegex `match`) versions'
+        return $ BS.pack $ unlines $ map show versions
+
+  return $ mapMaybe (versionRegex `match`) . lines $ BS.unpack contents
 
 -- | Regenerate the specified HIE revision stack2nix files in the given path
-regenerate :: String -> FilePath -> App ()
-regenerate revision genDir = do
+regenerate :: FilePath -> String -> App ()
+regenerate genDir revision = do
+  cleanDirectory genDir
+
   (hash, ref) <- revHash hie revision
   let revName = if "refs/heads/" `isPrefixOf` ref
         then take 10 hash else revision
@@ -236,8 +212,8 @@ regenerate revision genDir = do
   let versions = mapMaybe (stackPathRegex `match`) files
   liftIO $ putStrLn $ "HIE " ++ revName ++ " has ghc versions " ++ intercalate ", " (map show versions)
   forM_ versions $ \version -> do
-    file <- genS2N hash version
-    liftIO $ copyFile file $ genDir </> nixVersion version ++ ".nix"
+    contents <- genS2N hash version
+    liftIO $ BS.writeFile (genDir </> nixVersion version <.> "nix") contents
 
 
 newtype Repository = Repository String
@@ -263,7 +239,7 @@ git repo args = do
 -- | Ensures that the repository repo is cloned to its path with the latest updates fetched
 updateRepo :: Repository -> App ()
 updateRepo repo@(Repository url@(takeFileName -> name)) = do
-  path <- (</> name) <$> lift (asks cacheDir)
+  path <- repoPath repo
   exists <- liftIO $ doesPathExist path
   if exists then do
     git repo [ "clean", "-fd" ]
@@ -287,28 +263,16 @@ type Hist = [String]
 -- | Returns the nixpkgs-unstable channel commit history recorded by "https://channels.nix.gsc.io" in newest to oldest order
 getHistory :: App Hist
 getHistory = do
-  path <- cachePath cfileChannelHistory
-  now <- liftIO getCurrentTime
-  useCache <- liftIO (doesFileExist path) >>= \case
-    False -> return False
-    True -> do
-      modTime <- liftIO $ getModificationTime path
-      return $ now `diffUTCTime` modTime < 15 * 60
-  if useCache then do
-    liftIO $ putStrLn $ "Using cached result for " ++ url
-    liftIO $ lines <$> readFile path
-  else do
-    liftIO $ putStrLn $ "Because cache is expired, downloading " ++ url
+  contents <- Cache.get (Cache.ExpiresAfter (15 * 60)) "history-nixpkgs-unstable" $ do
     mgr <- lift $ asks manager
     response <- liftIO $ responseBody <$> httpLbs (parseRequest_ url) mgr
-    -- Because this file is downloaded in the order of oldest to newest
-    -- We reverse it for easier processing
     let items = reverse . ("c47ac0d8bf43543d8dcef4895167dd1f7af9d968":) . map (head . BS.words) $ BS.lines response
+    return $ BS.unlines items
 
-    liftIO $ BS.writeFile path $ BS.unlines items
-    return $ map BS.unpack items
+  return $ map BS.unpack . BS.lines $ contents
   where
     url = "https://channels.nix.gsc.io/nixpkgs-unstable/history-v2"
+
 
 
 -- | A GHC version

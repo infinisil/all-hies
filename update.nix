@@ -12,7 +12,7 @@ let
     pkgs.gawk
   ];
   pkg = (hpkgs.callCabal2nix "all-hies" (pkgs.lib.sourceByRegex ./. [
-    "update.hs"
+    "src.*"
     "all-hies.cabal"
   ]) {}).overrideAttrs (old: {
     nativeBuildInputs = old.nativeBuildInputs or [] ++ [
