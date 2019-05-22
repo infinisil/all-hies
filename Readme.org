@@ -2,6 +2,8 @@
 
 This repository provides cached Nix builds for the latest stable [[https://github.com/haskell/haskell-ide-engine][Haskell IDE Engine]] (HIE) for all supported GHC versions. It is intended to be a successor to [[https://github.com/domenkozar/hie-nix][hie-nix]], which only provides a changing subset of versions. This project solves the problem of having mismatched HIE and project GHC versions, which is almost impossible to avoid if you use a globally installed HIE and have many projects.
 
+For unstable versions, which is currently the only way to get a HIE for GHC 8.6.5, see [[#unstable-versions][this section]].
+
 ** Installation
 
 *** Cached builds
@@ -27,7 +29,9 @@ Add this to the start of your ~configuration.nix~:
     all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
   in
   {
-    # ...
+    environment.systemPackages = [
+      # ...
+    ];
   }
 #+END_SRC
 
@@ -86,24 +90,62 @@ For *all* supported GHC versions (warning: requires ~30GB (or <10GB with compres
   nix-env -iA selection --arg selector 'p: p' -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
 
+*** Unstable versions
+
+Unstable HIE versions are also provided, but *without build caches* and updated only as-needed. To use unstable versions, use the ~unstable~ top-level attribute, which provides ~latest~, ~versions~ and ~selection~ just as above, use as follows:
+
+**** NixOS installation
+#+BEGIN_SRC nix
+let
+  all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
+in {
+  environment.systemPackages = [
+    all-hies.unstable.versions.ghc865
+  ];
+}
+#+END_SRC
+
+See [[#nixos-installation][this section for more possibilities]], all of which work the same for unstable set.
+
+**** ~nix-env~ installation
+
+#+BEGIN_SRC bash
+  nix-env -iA unstable.versions.ghc865 -f https://github.com/infinisil/all-hies/tarball/master
+#+END_SRC
+
+See [[#nix-env-installation][this section for more possibilities]], all of which work the same for the unstable set.
+
 ** Updating this repository
 
 This section is only for all-hies developers and not intended for end users.
 
-If a new stable HIE version has been released, the following commands can be used to update the repository with it and build all versions
+To have the updater available, run
 #+BEGIN_SRC bash
-  nix-build update.nix
-  result/bin/update
-  nix-build -A versions -k
+  alias update="$(nix-build --no-out-link update.nix)/bin/update"
 #+END_SRC
 
-Or if you wish to use a different hie revision like master:
-
+Then you can use it as follows to generate the stable/unstable set (or any other set)
 #+BEGIN_SRC bash
-  result/bin/update master
+  update --name stable --revision 0.9.0.0
+  update --name unstable --revision master
 #+END_SRC
 
-This will take a long time, but these commands do a lot of intermediate caching and are idempotent, so they can be interrupted and resumed at any time. If builds fail for some reason, the ~overrides~ directory can be used to add GHC-specific Haskell overrides.
+Then to build stable/unstable package sets on high-end machines with 32GB RAM or more, you can use
 
-Depending on the amount of RAM you have, the above ~nix-build~ command can lead to a lot of thrashing, because Nix interleaves all dependencies from all different GHC versions, which means its working memory is about $number-of-versions * $size-of-ghc. To avoid this, build each version in a series of commands instead (or only k versions at a time). Because there's a lot of dependencies, you might also want to use `--max-jobs auto --cores 1`, in order to approximate maximal processor usage and minimize build time.
+#+BEGIN_SRC bash
+  nix-build -A versions --max-jobs auto --cores 1
+  nix-build -A unstable.versions --max-jobs auto --cores 1
+#+END_SRC
+
+However if you don't have that much RAM, this leads to a lot of thrashing due to the many different dependencies between GHC versions. Use something like the following to prevent this (note that this uses the ~jq~ command from the ~jq~ package):
+
+#+BEGIN_SRC bash
+  nix-instantiate --eval -E 'builtins.attrNames (import ./. {}).versions' --json | jq -r '.[]' \
+    | xargs -I{} -P1 nix-build -A versions.{} --max-jobs auto --cores 1
+  nix-instantiate --eval -E 'builtins.attrNames (import ./. {}).unstable.versions' --json | jq -r '.[]' \
+    | xargs -I{} -P1 nix-build -A unstable.versions.{} --max-jobs auto --cores 1
+#+END_SRC
+
+Both the ~update~ and ~nix-build~'s take a long time, but both do a lot of intermediate caching and are idempotent, so they can be interrupted and resumed at any time without losing too much progress. If builds fail for some reason, the ~overrides~ directory can be used to add GHC-specific overrides.
+
 
