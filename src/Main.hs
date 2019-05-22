@@ -183,7 +183,7 @@ findNixpkgsForGhc version = do
 -- | Determines the available GHC versions for a nixpkgs revision
 ghcVersionsForNixpkgs :: String -> App [Version]
 ghcVersionsForNixpkgs rev = do
-  contents <- Cache.get Cache.ExpiresNever "per-nixpkgs/ghcVersions" $ do
+  contents <- Cache.get Cache.ExpiresNever ("per-nixpkgs/ghcVersions" </> rev) $ do
     git nixpkgs [ "checkout", rev ]
     nixpkgs <- repoPath nixpkgs
     stdout <- liftIO $ readProcess "nix-instantiate" [ "--eval", "--json", "-" ]
