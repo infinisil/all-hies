@@ -19,7 +19,7 @@ let
     });
   };
 
-  ghcSpecific = ghcVersion: rec {
+  ghcSpecific = buildName: ghcVersion: rec {
 
     # Reformats the ghc version into the format "8.6.4"
     versionString = lib.concatStringsSep "."
@@ -32,7 +32,7 @@ let
     # Evaluates to a nixpkgs that has the given ghc version in it
     pkgs = let
       rev = builtins.readFile (./nixpkgsForGhc + "/${ghcVersion}");
-      sha256 = builtins.readFile (./generated/nixpkgsHashes + "/${rev}");
+      sha256 = builtins.readFile (./generated + "/${buildName}/nixpkgsHashes/${rev}");
     in import (fetchTarball {
       url = "https://github.com/NixOS/nixpkgs/tarball/${rev}";
       inherit sha256;
@@ -42,7 +42,7 @@ let
     # (minus a select few)
     baseLibraryNuller = self: super: let
       libs = lib.splitString " "
-        (builtins.readFile (./generated/ghcBaseLibraries + "/${ghcVersion}"));
+        (builtins.readFile (./generated + "/${buildName}/ghcBaseLibraries/${ghcVersion}"));
       libNames = map (lib: (builtins.parseDrvName lib).name) libs;
       # It seems that some versions require Cabal and some don't
       filtered = lib.filter (name: ! lib.elem name [ "ghc" "Cabal" ]) libNames;
@@ -57,10 +57,10 @@ let
 
 
   # Build for a specific GHC version
-  hieBuild = ghcVersion: let
-    forGhc = ghcSpecific ghcVersion;
+  hieBuild = buildName: ghcVersion: let
+    forGhc = ghcSpecific buildName ghcVersion;
     hlib = forGhc.pkgs.haskell.lib;
-    revision = builtins.readFile ./generated/stack2nix/revision;
+    revision = builtins.readFile (./generated + "/${buildName}/stack2nix/revision");
 
     hieOverride = self: super: {
       haskell-ide-engine = (hlib.overrideCabal super.haskell-ide-engine (old: {
@@ -103,7 +103,7 @@ let
       ];
     };
 
-    expr = import (./generated/stack2nix + "/${ghcVersion}.nix") {
+    expr = import (./generated + "/${buildName}/stack2nix/${ghcVersion}.nix") {
       pkgs = forGhc.pkgs;
     };
 
@@ -114,16 +114,15 @@ let
   # { stable = { ghc864 = <derivation ..>; ... }; unstable = ...; }
   # Each of which contain binaries hie and hie-$major.$minor.$patch for their
   # GHC version, along with a hie-wrapper binary that knows about this version
-  allVersions =
+  allVersions = lib.mapAttrs (buildName: _:
     let ghcVersionFiles = lib.filterAttrs (file: _: file != "revision")
-      (builtins.readDir ./generated/stack2nix);
+      (builtins.readDir (./generated + "/${buildName}/stack2nix"));
     in lib.mapAttrs' (ghcVersionFile: _:
 
       let ghcVersion = lib.removeSuffix ".nix" ghcVersionFile;
-      in lib.nameValuePair ghcVersion (hieBuild ghcVersion)
+      in lib.nameValuePair ghcVersion (hieBuild buildName ghcVersion)
 
-    ) ghcVersionFiles;
-
+    ) ghcVersionFiles) (builtins.readDir ./generated);
 
   # Combine a set of HIE versions (given as { <ghcVersion> = <derivation>; })
   # into a single derivation with the following binaries:
@@ -180,11 +179,17 @@ let
     '';
   };
 
-in {
+  # Generates a set with the utility functions from a set of versions
+  mkSet = versions: {
+    inherit combined versions;
+    selection = { selector }: combined (selector versions);
+    latest = lib.last (lib.attrValues versions);
+  };
 
-  inherit combined;
-  versions = allVersions;
-  selection = { selector }: combined (selector allVersions);
-  latest = lib.last (lib.attrValues allVersions);
-
+in mkSet allVersions.stable
+// lib.mapAttrs (_: mkSet) (builtins.removeAttrs allVersions ["stable"])
+// {
+  # Stable, but fall back to unstable if stable doesn't have a certain GHC
+  # version
+  unstableFallback = mkSet (allVersions.unstable // allVersions.stable);
 }
