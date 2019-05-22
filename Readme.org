@@ -23,97 +23,75 @@ On Linux and some versions of macOS, building HIE yourself is also possible and 
 The only known macOS version to succeed in building all HIE versions is High Sierra, which was used to build the caches. MacOS Mojave specifically doesn't work for some HIE versions.
 
 *** NixOS installation
-Add this to the start of your ~configuration.nix~:
+
+To install stable HIE for a specific set of GHC versions, use the following in your ~/etc/nixos/configuration.nix~. This will install ~hie~ and ~hie-wrapper~ binaries which are both HIE versions that select the correct version out of the given ones for your projects. Note that ~hie~ is just a symlink to ~hie-wrapper~.
 #+BEGIN_SRC nix
   let
     all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
   in
   {
     environment.systemPackages = [
-      # ...
+      # Install stable HIE for GHC 8.6.4, 8.6.3 and 8.4.3
+      (all-hies.selection { selector = p: { inherit (p) ghc864 ghc863 ghc843; }; })
     ];
   }
 #+END_SRC
 
-Then depending on your needs, add the versions you need to ~environment.systemPackages~:
-
-For the latest supported GHC version only (which is 8.6.4 right now):
+To install *all* stable HIE versions for all supported GHC versions use the following. Warning: Requires ~30GB (or <10GB with compression) of space!
 #+BEGIN_SRC nix
-  {
-    environment.systemPackages = [ all-hies.latest ];
-  }
-#+END_SRC
-
-For a specific version of GHC (warning: If you need multiple versions, use the approach after this one instead):
-#+BEGIN_SRC nix
-  {
-    environment.systemPackages = [ all-hies.versions.ghc864 ];
-  }
-#+END_SRC
-
-For a specific set of GHC versions (note: The ~hie~ / ~hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
-#+BEGIN_SRC nix
-   {
-     environment.systemPackages = [
-       (all-hies.selection { selector = p: { inherit (p) ghc864 ghc863 ghc843; }; })
-     ];
-   }
-#+END_SRC
-
-For *all* supported GHC versions (warning: requires ~30GB (or <10GB with compression) of space for all 9 versions):
-#+BEGIN_SRC nix
+  let
+    all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
+  in
   {
     environment.systemPackages = [
+      # Install all stable HIE versions
       (all-hies.selection { selector = p: p; })
     ];
   }
 #+END_SRC
 
 *** ~nix-env~ installation
-For the latest supported GHC version only (which is 8.6.4 right now):
-#+BEGIN_SRC bash
-  nix-env -iA latest -f https://github.com/infinisil/all-hies/tarball/master
-#+END_SRC
 
-For a specific version of GHC (warning: If you need multiple versions, use the approach after this one instead):
-#+BEGIN_SRC bash
-  nix-env -iA versions.ghc864 -f https://github.com/infinisil/all-hies/tarball/master
-#+END_SRC
-
-For a specific set of GHC versions (note: The ~hie~ / ~hie-wrapper~ binaries will both be a HIE wrapper that chooses the correct version out of the given ones):
+To install stable HIE for a specific set of GHC versions use the following. This will install ~hie~ and ~hie-wrapper~ binaries which are both HIE versions that select the correct version out of the given ones for your projects. Note that ~hie~ is just a symlink to ~hie-wrapper~.
 #+BEGIN_SRC bash
   nix-env -iA selection --arg selector 'p: { inherit (p) ghc864 ghc863 ghc843; }' -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
 
-For *all* supported GHC versions (warning: requires ~30GB (or <10GB with compression) of space for all 9 versions):
+To install *all* stable HIE versions for all supported GHC versions use the following. Warning: Requires ~30GB (or <10GB with compression) of space!
 #+BEGIN_SRC bash
   nix-env -iA selection --arg selector 'p: p' -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
 
 *** Unstable versions
 
-Unstable HIE versions are also provided, but *without build caches* and updated only as-needed. To use unstable versions, use the ~unstable~ top-level attribute, which provides ~latest~, ~versions~ and ~selection~ just as above, use as follows:
+Unstable HIE versions are also provided but *without build caches*, so refer to the section on [[#building-without-cached-builds][building without cached builds]]. These versions are only updated as needed.
 
-**** NixOS installation
+If you just want to get a HIE version for a GHC that stable doesn't support yet, use the ~unstableFallback~ attribute, which uses stable if it's available for that GHC version, but falls back to unstable if not. For unstable versions only, use the ~unstable~ attribute. Both ~unstable~ and ~unstableFallback~ provide the ~selection~ function just like the standard stable set, so the installation is very similar:
+
+**** NixOS
 #+BEGIN_SRC nix
 let
   all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
 in {
   environment.systemPackages = [
-    all-hies.unstable.versions.ghc865
+    # Install stable HIE for GHC versions 8.6.4 and 8.6.5 if available and fall back to unstable otherwise
+    (all-hies.unstableFallback.selection { selector = p: { inherit (p) ghc864 ghc865; }; })
+
+    # Install unstable HIE for GHC versions 8.4.4 and 8.6.5
+    (all-hies.unstable.selection { selector = p: { inherit (p) ghc844 ghc865; }; })
   ];
 }
 #+END_SRC
 
-See [[#nixos-installation][this section for more possibilities]], all of which work the same for unstable set.
-
-**** ~nix-env~ installation
+**** ~nix-env~
 
 #+BEGIN_SRC bash
-  nix-env -iA unstable.versions.ghc865 -f https://github.com/infinisil/all-hies/tarball/master
+  # Install stable HIE for GHC versions 8.6.4 and 8.6.5 if available and fall back to unstable otherwise
+  nix-env -iA unstableFallback.selection --arg selector 'p: { inherit (p) ghc864 ghc865; }' -f https://github.com/infinisil/all-hies/tarball/master
+  
+  # Install unstable HIE for GHC versions 8.4.4 and 8.6.5
+  nix-env -iA unstable.selection --arg selector 'p: { inherit (p) ghc844 ghc865; }' -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
-
-See [[#nix-env-installation][this section for more possibilities]], all of which work the same for the unstable set.
 
 ** Updating this repository
 
