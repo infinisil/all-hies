@@ -25,10 +25,12 @@ import           System.Process
 import           Text.Regex.Applicative
 
 import qualified Cache
+import           Options
 
 data Env = Env
   { cacheDir :: FilePath
   , manager  :: Manager
+  , opts     :: Options
   }
 
 -- | Initializes the read-only environment
@@ -36,6 +38,7 @@ getEnv :: IO Env
 getEnv = Env
   <$> getXdgDirectory XdgCache "all-hies"
   <*> newTlsManager
+  <*> getOptions
 
 type App = InputT (ReaderT Env IO)
 
@@ -51,21 +54,17 @@ run = do
   updateRepo nixpkgs
 
   repoPath nixpkgs >>= \path -> liftIO $ setEnv "NIX_PATH" ("nixpkgs=" ++ path)
-  cleanGenerated
 
-  stable <- latestTag hie
-  revision <- fromMaybe stable . listToMaybe <$> liftIO getArgs
-  regenerate (dirGenerated </> "stack2nix") revision
+  name <- lift $ asks (optName . opts)
+  rev <- lift $ asks (optRev . opts)
+  regenerate ("generated" </> name) rev
 
-dirGenerated = "generated"
-dirNixpkgsHashes = dirGenerated </> "nixpkgsHashes"
-dirGhcBaseLibraries = dirGenerated </> "ghcBaseLibraries"
-
-cleanGenerated :: App ()
-cleanGenerated = do
-  cleanDirectory dirGenerated
-  liftIO $ createDirectory dirNixpkgsHashes
-  liftIO $ createDirectory dirGhcBaseLibraries
+cleanGenerated :: FilePath -> App ()
+cleanGenerated root = do
+  cleanDirectory root
+  liftIO $ createDirectory (root </> "nixpkgsHashes")
+  liftIO $ createDirectory (root </> "ghcBaseLibraries")
+  liftIO $ createDirectory (root </> "stack2nix")
 
 -- | Makes sure that the given directory is existent and empty
 cleanDirectory :: FilePath -> App ()
@@ -119,22 +118,22 @@ callStack2nix rev version = liftIO $ do
 
 
 -- | Generate the stack2nix file for the specified HIE git hash and ghc version
-genS2N :: String -> Version -> App BS.ByteString
-genS2N hash version = do
+genS2N :: FilePath -> String -> Version -> App BS.ByteString
+genS2N root hash version = do
 
   nixpkgsRev <- findNixpkgsForGhc version
   sha <- nixpkgsSha nixpkgsRev
-  liftIO $ writeFile (dirNixpkgsHashes </> nixpkgsRev) sha
+  liftIO $ writeFile (root </> "nixpkgsHashes" </> nixpkgsRev) sha
 
-  genBaseLibraries version nixpkgsRev
+  genBaseLibraries root version nixpkgsRev
 
   Cache.get Cache.ExpiresNever ("per-hie" </> hash </> nixVersion version <.> ".nix") $ do
     liftIO $ putStrLn $ "Using nixpkgs revision " ++ nixpkgsRev ++ " for ghc version " ++ show version
     git nixpkgs [ "checkout", nixpkgsRev ]
     callStack2nix hash version
 
-genBaseLibraries :: Version -> String -> App ()
-genBaseLibraries version@(Version major minor patch) nixpkgsRev = do
+genBaseLibraries :: FilePath -> Version -> String -> App ()
+genBaseLibraries root version@(Version major minor patch) nixpkgsRev = do
   contents <- Cache.get Cache.ExpiresNever ("per-ghcMinor" </> show major ++ show minor) $ do
     git nixpkgs [ "checkout", nixpkgsRev ]
     ghcPath <- liftIO $ init <$> readProcess "nix-build"
@@ -143,7 +142,7 @@ genBaseLibraries version@(Version major minor patch) nixpkgsRev = do
       [ "list", "--no-user-package-db", "--simple" ] ""
     return $ BS.pack libs
 
-  liftIO $ BS.writeFile (dirGhcBaseLibraries </> nixVersion version) contents
+  liftIO $ BS.writeFile (root </> "ghcBaseLibraries" </> nixVersion version) contents
 
 nixpkgsSha :: String -> App String
 nixpkgsSha revision = do
@@ -198,22 +197,23 @@ ghcVersionsForNixpkgs rev = do
 
 -- | Regenerate the specified HIE revision stack2nix files in the given path
 regenerate :: FilePath -> String -> App ()
-regenerate genDir revision = do
-  cleanDirectory genDir
+regenerate root revision = do
+  liftIO $ putStrLn $ "Regenerating " ++ root ++ " with revision " ++ revision
+  cleanGenerated root
 
   (hash, ref) <- revHash hie revision
   let revName = if "refs/heads/" `isPrefixOf` ref
         then take 10 hash else revision
   liftIO $ putStrLn $ "Regenerating for revision " ++ revName ++ " (" ++ hash ++ ")"
-  liftIO $ putStrLn $ "Writing " ++ revName ++ " to " ++ genDir ++ "/revision"
-  liftIO $ writeFile (genDir </> "revision") revName
+  liftIO $ putStrLn $ "Writing " ++ revName ++ " to " ++ root ++ "stack2nix/revision"
+  liftIO $ writeFile (root </> "stack2nix/revision") revName
   git hie [ "checkout", hash ]
   files <- repoPath hie >>= liftIO . listDirectory
   let versions = mapMaybe (stackPathRegex `match`) files
   liftIO $ putStrLn $ "HIE " ++ revName ++ " has ghc versions " ++ intercalate ", " (map show versions)
   forM_ versions $ \version -> do
-    contents <- genS2N hash version
-    liftIO $ BS.writeFile (genDir </> nixVersion version <.> "nix") contents
+    contents <- genS2N root hash version
+    liftIO $ BS.writeFile (root </> "stack2nix" </> nixVersion version <.> "nix") contents
 
 
 newtype Repository = Repository String
