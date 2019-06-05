@@ -186,7 +186,8 @@ let
     latest = lib.last (lib.attrValues versions);
   };
 
-in mkSet allVersions.stable
+in mkSet allVersions.stable //
+{ version = builtins.readFile ./generated/stable/stack2nix/revision; }
 // lib.mapAttrs (_: mkSet) (builtins.removeAttrs allVersions ["stable"])
 // {
   # Stable, but fall back to unstable if stable doesn't have a certain GHC
