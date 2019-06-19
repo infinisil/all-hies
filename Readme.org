@@ -15,6 +15,7 @@ cachix use all-hies
 #+END_SRC
 
 Note: Due to an issue with cachix you might have to restart the nix daemon for this to take effect, refer to [[https://github.com/cachix/cachix/issues/188][this issue]].
+After configuring cache, proceed to install instructions for your system.
 
 *** Building without cached builds
 
