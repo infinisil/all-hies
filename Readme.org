@@ -16,7 +16,7 @@ cachix use all-hies
 
 Note: Due to an issue with cachix you might have to restart the nix daemon for this to take effect, refer to [[https://github.com/cachix/cachix/issues/188][this issue]].
 
-After configuring cache, proceed to install instructions for your system.
+After configuring the cache, proceed to the install instructions below.
 
 *** Building without cached builds
 
