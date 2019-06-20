@@ -208,6 +208,7 @@ regenerate root revision = do
   liftIO $ putStrLn $ "Writing " ++ revName ++ " to " ++ root ++ "stack2nix/revision"
   liftIO $ writeFile (root </> "stack2nix/revision") revName
   git hie [ "checkout", hash ]
+  git hie [ "submodule", "update", "--recursive" ]
   files <- repoPath hie >>= liftIO . listDirectory
   let versions = mapMaybe (stackPathRegex `match`) files
   liftIO $ putStrLn $ "HIE " ++ revName ++ " has ghc versions " ++ intercalate ", " (map show versions)
