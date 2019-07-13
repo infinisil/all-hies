@@ -157,10 +157,10 @@ let
       # find any appropriate hie-*.*.* binary, in which case the user needs to
       # adjust their all-hies installation to make that one available.
       cat > $out/libexec/bin/hie << EOF
-        #!${pkgs.runtimeShell}
-        echo "hie-wrapper couldn't find a HIE binary with a matching GHC" \
-          "version in your all-hies installation" >&2
-        exit 1
+      #!${pkgs.runtimeShell}
+      echo "hie-wrapper couldn't find a HIE binary with a matching GHC" \\
+        "version in your all-hies installation" >&2
+      exit 1
       EOF
       chmod +x $out/libexec/bin/hie
 
