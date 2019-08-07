@@ -684,8 +684,8 @@ inherit (pkgs) zlib;};
            version = "0.8.4.1";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/HaRe; echo source root reset to $sourceRoot";
@@ -5708,8 +5708,8 @@ inherit (pkgs.xorg) libXfixes;};
            version = "0.9.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/cabal-helper; echo source root reset to $sourceRoot";
@@ -13019,8 +13019,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "ghc-lib-parser";
-           version = "8.8.0.20190424";
-           sha256 = "206c2e90f9f60aee3c39f392c37d3346d12062dd2a53bebc5e23e44b5282fa89";
+           version = "8.8.0.20190723";
+           sha256 = "5856e40dcee4f02853fb94dec72c7e8a5b0cd73e6b3100c8582d300151daf96b";
            enableSeparateDataOutput = true;
            libraryHaskellDepends = [
              array base binary bytestring containers deepseq directory filepath
@@ -13047,8 +13047,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "5.9.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod; echo source root reset to $sourceRoot";
@@ -13080,8 +13080,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "5.9.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod/core; echo source root reset to $sourceRoot";
@@ -13159,8 +13159,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "5.9.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod/ghc-project-types; echo source root reset to $sourceRoot";
@@ -14564,11 +14564,11 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "haskell-ide-engine";
-           version = "0.11.0.0";
+           version = "0.12.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            configureFlags = [ "-fpedantic" ];
@@ -15255,11 +15255,11 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "hie-plugin-api";
-           version = "0.11.0.0";
+           version = "0.12.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/hie-plugin-api; echo source root reset to $sourceRoot";
@@ -15614,8 +15614,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "hlint";
-           version = "2.1.24";
-           sha256 = "0668d12a145de3795ede61aace46e300bad9fc4d8eb127e8e9d9d0f3d0f31875";
+           version = "2.2.2";
+           sha256 = "d717f06091d4b651671ffa3c3d88115d353a595b7853f9860af3b74d3eeb20ec";
            isLibrary = true;
            isExecutable = true;
            enableSeparateDataOutput = true;
@@ -25984,8 +25984,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "product-profunctors";
            version = "0.10.0.0";
            sha256 = "ad8d7687c2eee4bcd2f3925a74f53d743c9f678b80be2a523221039004d51a68";
-           revision = "1";
-           editedCabalFile = "17zi38fzg7yf9i5da2hlch6jw2qhmjcvs9wwkhyvra520605mlya";
+           revision = "2";
+           editedCabalFile = "0sarkc9sch60f5j1xjy30yrgycvmp5bqx1iynmlsfzdx7rvk5s29";
            libraryHaskellDepends = [
              base bifunctors contravariant profunctors tagged template-haskell
            ];
