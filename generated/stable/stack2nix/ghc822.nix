@@ -915,8 +915,8 @@ inherit (pkgs) zlib;};
            version = "0.8.4.1";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/HaRe; echo source root reset to $sourceRoot";
@@ -6977,8 +6977,8 @@ inherit (pkgs.xorg) libXfixes;};
            version = "0.9.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/cabal-helper; echo source root reset to $sourceRoot";
@@ -14274,8 +14274,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "geniplate-mirror";
            version = "0.7.6";
            sha256 = "4b6b82d0348e79ae4a5e1deac029441251ae87ec15a7667cf0a1de5ff80215f8";
-           revision = "1";
-           editedCabalFile = "1pyz2vdkr5w9wadmb5v4alx408dqamny3mkvl4x8v2pf549qn37k";
+           revision = "2";
+           editedCabalFile = "03fg4vfm1wgq4mylggawdx0bfvbbjmdn700sqx7v3hk1bx0kjfzh";
            libraryHaskellDepends = [ base mtl template-haskell ];
            doHaddock = false;
            doCheck = false;
@@ -14676,8 +14676,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "5.9.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod; echo source root reset to $sourceRoot";
@@ -14709,8 +14709,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "5.9.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod/core; echo source root reset to $sourceRoot";
@@ -14788,8 +14788,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "5.9.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod/ghc-project-types; echo source root reset to $sourceRoot";
@@ -16497,11 +16497,11 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "haskell-ide-engine";
-           version = "0.11.0.0";
+           version = "0.12.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            configureFlags = [ "-fpedantic" ];
@@ -17488,11 +17488,11 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "hie-plugin-api";
-           version = "0.11.0.0";
+           version = "0.12.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1sj1ajnjgk3wzzm6vvx4kjil42dym12mkmvwh8vss2xcb218fph2";
-             rev = "fa479348f8917b0244aec438c20ca50f481ea5b7";
+             sha256 = "1pbrb59z9wbisd3xf5ssrprcv63x423wgyshy8x3kwhdgdmkjvaf";
+             rev = "3deb4a20bea5f6e31beada1036daa74071a76805";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/hie-plugin-api; echo source root reset to $sourceRoot";
@@ -28279,6 +28279,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "persistent-mongoDB";
            version = "2.8.0";
            sha256 = "f410a1427881d8d58f4d0dfcc875d84867d8afdcdd340573c9e298df303b178a";
+           revision = "1";
+           editedCabalFile = "06iqf7frc5h7qvxhnxi2zirgspsmafp2ls0jw3ppzb01q0y6mgi4";
            libraryHaskellDepends = [
              aeson attoparsec base bson bytestring cereal conduit containers
              http-api-data mongoDB network path-pieces persistent resource-pool
@@ -28769,6 +28771,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "pipes-group";
            version = "1.0.12";
            sha256 = "1373e89fbeb127c31461042cdda848da2048eda2700ddbd872d444af87745ac7";
+           revision = "1";
+           editedCabalFile = "0ws99n692c9km68n9y3x0b5bqdg3b47sva04nx9a4xdqr8p5akps";
            libraryHaskellDepends = [
              base free pipes pipes-parse transformers
            ];
