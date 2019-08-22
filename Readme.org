@@ -1,6 +1,6 @@
 * Cached Haskell IDE Engine Nix builds for all GHC versions
 
-This repository provides cached Nix builds for the latest stable [[https://github.com/haskell/haskell-ide-engine][Haskell IDE Engine]] (HIE) for all supported GHC versions. It is intended to be a successor to [[https://github.com/domenkozar/hie-nix][hie-nix]], which only provides a changing subset of versions. This project solves the problem of having mismatched HIE and project GHC versions, which is almost impossible to avoid if you use a globally installed HIE and have many projects.
+This repository provides cached Nix builds for the latest stable [Haskell IDE Engine](https://github.com/haskell/haskell-ide-engine) (HIE) for all supported GHC versions. It is intended to be a successor to [hie-nix](https://github.com/domenkozar/hie-nix), which only provides a changing subset of versions. This project solves the problem of having mismatched HIE and project GHC versions, which is almost impossible to avoid if you use a globally installed HIE and have many projects.
 
 For unstable versions see [[#unstable-versions][this section]].
 
@@ -71,6 +71,7 @@ Unstable HIE versions are also provided but *without build caches*, so refer to 
 If you just want to get a HIE version for a GHC that stable doesn't support yet, use the ~unstableFallback~ attribute, which uses stable if it's available for that GHC version, but falls back to unstable if not. For unstable versions only, use the ~unstable~ attribute. Both ~unstable~ and ~unstableFallback~ provide the ~selection~ function just like the standard stable set, so the installation is very similar:
 
 **** NixOS
+
 #+BEGIN_SRC nix
 let
   all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
@@ -83,6 +84,26 @@ in {
     (all-hies.unstable.selection { selector = p: { inherit (p) ghc844 ghc865; }; })
   ];
 }
+#+END_SRC
+
+**** Nix install using `~/.nixpkgs/config.nix`
+
+Add to the `let` variables:
+
+#+BEGIN_SRC nix
+all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
+#+END_SRC
+
+and add following to the list of packages:
+
+#+BEGIN_SRC nix
+(all-hies.selection { selector = p: { inherit (p) ghc864; }; })
+#+END_SRC
+
+then run the following to install HIE:
+
+#+BEGIN_SRC bash
+nix-env -i all
 #+END_SRC
 
 **** ~nix-env~
