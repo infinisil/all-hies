@@ -24,7 +24,9 @@ On Linux and some versions of macOS, building HIE yourself is also possible and 
 
 The only known macOS version to succeed in building all HIE versions is High Sierra, which was used to build the caches. MacOS Mojave specifically doesn't work for some HIE versions.
 
-*** NixOS installation
+*** Declarative installation (NixOS, home-manager or similar)
+
+This section describes installation with NixOS, but this is easily adaptable to [[https://github.com/rycee/home-manager][home-manager]] or other declarative installation methods by using the appropriate file and options. E.g. with home-manager, use ~~/.config/nixpkgs/home.nix~ instead of ~/etc/nixos/configuration.nix~ and assign to ~home.packages~ instead of ~environment.systemPackages~.
 
 To install stable HIE for a specific set of GHC versions, use the following in your ~/etc/nixos/configuration.nix~. This will install ~hie~ and ~hie-wrapper~ binaries which are both HIE versions that select the correct version out of the given ones for your projects. Note that ~hie~ is just a symlink to ~hie-wrapper~.
 #+BEGIN_SRC nix
@@ -66,7 +68,7 @@ To install *all* stable HIE versions for all supported GHC versions use the foll
 
 *** Unstable versions
 
-Unstable HIE versions are also provided but *without build caches*, so refer to the section on [[#building-without-cached-builds][building without cached builds]]. These versions are only updated as needed. Note: Currently unstable is the same as stable.
+Sometimes unstable HIE versions are also provided but *without build caches*, so refer to the section on [[#building-without-cached-builds][building without cached builds]]. If no unstable version is provided the installation described here will be the same as the stable version.
 
 If you just want to get a HIE version for a GHC that stable doesn't support yet, use the ~unstableFallback~ attribute, which uses stable if it's available for that GHC version, but falls back to unstable if not. For unstable versions only, use the ~unstable~ attribute. Both ~unstable~ and ~unstableFallback~ provide the ~selection~ function just like the standard stable set, so the installation is very similar:
 
