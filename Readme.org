@@ -26,7 +26,7 @@ The only known macOS version to succeed in building all HIE versions is High Sie
 
 *** Declarative installation (NixOS, home-manager or similar)
 
-This section describes installation with NixOS, but this is easily adaptable to [[https://github.com/rycee/home-manager][home-manager]] or other declarative installation methods by using the appropriate file and options. E.g. with home-manager, use ~~/.config/nixpkgs/home.nix~ instead of ~/etc/nixos/configuration.nix~ and assign to ~home.packages~ instead of ~environment.systemPackages~.
+This section describes installation with NixOS, but this is easily adaptable to [[https://github.com/rycee/home-manager][home-manager]] or other declarative installation methods by using the appropriate file and options. E.g. with home-manager, use =~/.config/nixpkgs/home.nix= instead of ~/etc/nixos/configuration.nix~ and assign to ~home.packages~ instead of ~environment.systemPackages~.
 
 To install stable HIE for a specific set of GHC versions, use the following in your ~/etc/nixos/configuration.nix~. This will install ~hie~ and ~hie-wrapper~ binaries which are both HIE versions that select the correct version out of the given ones for your projects. Note that ~hie~ is just a symlink to ~hie-wrapper~.
 #+BEGIN_SRC nix
