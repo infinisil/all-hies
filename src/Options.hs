@@ -8,6 +8,7 @@ import           Options.Applicative
 data Options = Options
   { optName :: String
   , optRev  :: String
+  , optRepo :: String
   }
 
 parser :: Parser Options
@@ -23,6 +24,12 @@ parser = Options
    <> short 'r'
    <> metavar "REV"
    <> help "HIE revision to use, accepts branches, git hashes, tags and more"
+    )
+  <*> strOption
+    ( long "hie-repo"
+   <> metavar "URL"
+   <> help "Which repository to use"
+   <> value "https://github.com/haskell/haskell-ide-engine"
     )
 
 options :: ParserInfo Options

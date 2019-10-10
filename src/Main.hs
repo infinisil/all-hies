@@ -33,6 +33,7 @@ data Env = Env
   , opts     :: Options
   }
 
+
 -- | Initializes the read-only environment
 getEnv :: IO Env
 getEnv = Env
@@ -42,6 +43,9 @@ getEnv = Env
 
 type App = InputT (ReaderT Env IO)
 
+hie :: App Repository
+hie = lift $ asks $ Repository . optRepo . opts
+
 main :: IO ()
 main = do
   env <- getEnv
@@ -50,7 +54,6 @@ main = do
 
 run :: App ()
 run = do
-  updateRepo hie
   updateRepo nixpkgs
 
   repoPath nixpkgs >>= \path -> liftIO $ setEnv "NIX_PATH" ("nixpkgs=" ++ path)
@@ -92,12 +95,12 @@ revHash (Repository url) rev = do
 
 -- | A call to stack2nix for generating a haskell-ide-engine expression at a specified path, for a specific revision and ghc version
 callStack2nix :: String -> Version -> App BS.ByteString
-callStack2nix rev version = liftIO $ do
-  let (Repository repo) = hie
+callStack2nix rev version = do
+  Repository repo <- hie
 
-  putStrLn $ "Running stack2nix for hie revision " ++ rev ++ " and ghc version " ++ show version
+  liftIO $ putStrLn $ "Running stack2nix for hie revision " ++ rev ++ " and ghc version " ++ show version
 
-  withSystemTempFile "all-hies-stack2nix" $ \path handle -> do
+  liftIO $ withSystemTempFile "all-hies-stack2nix" $ \path handle -> do
     hClose handle
     handleJust (\e -> if e == ExitSuccess then Just () else Nothing) return $
       stack2nix Args
@@ -200,30 +203,29 @@ regenerate :: FilePath -> String -> App ()
 regenerate root revision = do
   liftIO $ putStrLn $ "Regenerating " ++ root ++ " with revision " ++ revision
   cleanGenerated root
-
-  (hash, ref) <- revHash hie revision
+  hieRepo <- hie
+  (hash, ref) <- revHash hieRepo revision
   let revName = if "refs/heads/" `isPrefixOf` ref
         then take 10 hash else revision
   liftIO $ putStrLn $ "Regenerating for revision " ++ revName ++ " (" ++ hash ++ ")"
   liftIO $ putStrLn $ "Writing " ++ revName ++ " to " ++ root ++ "stack2nix/revision"
   liftIO $ writeFile (root </> "stack2nix/revision") revName
-  git hie [ "checkout", hash ]
-  git hie [ "submodule", "update", "--recursive" ]
-  files <- repoPath hie >>= liftIO . listDirectory
+  files <- listRepoFiles hieRepo
   let versions = mapMaybe (stackPathRegex `match`) files
   liftIO $ putStrLn $ "HIE " ++ revName ++ " has ghc versions " ++ intercalate ", " (map show versions)
   forM_ versions $ \version -> do
     contents <- genS2N root hash version
     liftIO $ BS.writeFile (root </> "stack2nix" </> nixVersion version <.> "nix") contents
 
+listRepoFiles :: Repository -> App [FilePath]
+listRepoFiles (Repository repo) = liftIO $ withSystemTempDirectory "all-hies-repo" $ \tmpDir -> do
+  readProcess "git" [ "clone", repo, tmpDir ] ""
+  listDirectory tmpDir
 
 newtype Repository = Repository String
 
 nixpkgs :: Repository
 nixpkgs = Repository "https://github.com/NixOS/nixpkgs"
-
-hie :: Repository
-hie = Repository "https://github.com/haskell/haskell-ide-engine"
 
 -- | Returns the local checkout path to a repository
 repoPath :: Repository -> App FilePath
