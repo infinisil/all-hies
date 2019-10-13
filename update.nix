@@ -20,7 +20,8 @@ let
     ];
     postInstall = old.postInstall or "" + ''
       wrapProgram $out/bin/update \
-        --set PATH "${lib.makeBinPath runtimeDeps}"
+        --set PATH "${lib.makeBinPath runtimeDeps}" \
+        --set LOCALE_ARCHIVE "${pkgs.glibcLocales}/lib/locale/locale-archive"
     '';
   });
 in pkg // {
