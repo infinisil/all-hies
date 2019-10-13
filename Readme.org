@@ -114,6 +114,7 @@ Then you can use it as follows to generate the stable/unstable set (or any other
 #+BEGIN_SRC bash
   update --name stable --revision 0.10.0.0
   update --name unstable --revision master
+  update --name bios --revision hie-bios --hie-repo https://github.com/mpickering/haskell-ide-engine
 #+END_SRC
 
 Then to build stable/unstable package sets on high-end machines with 32GB RAM or more, you can use
