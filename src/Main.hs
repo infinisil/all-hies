@@ -139,8 +139,12 @@ genBaseLibraries :: FilePath -> Version -> String -> App ()
 genBaseLibraries root version@(Version major minor patch) nixpkgsRev = do
   contents <- Cache.get Cache.ExpiresNever ("per-ghcMinor" </> show major ++ show minor) $ do
     git nixpkgs [ "checkout", nixpkgsRev ]
+    let -- Arguments to set config and overlays to nothing so
+        -- that they aren't sourced from the user's configuration
+        -- files in ~/.config/nixpkgs
+        purePkgs = [ "--arg", "config", "{}", "--arg", "overlays", "[]" ]
     ghcPath <- liftIO $ init <$> readProcess "nix-build"
-      [ "--no-out-link", "<nixpkgs>", "-A", "haskell.compiler." ++ nixVersion version ] ""
+      ([ "--no-out-link", "<nixpkgs>", "-A", "haskell.compiler." ++ nixVersion version ] ++ purePkgs) ""
     libs <- liftIO $ readProcess (ghcPath </> "bin/ghc-pkg")
       [ "list", "--no-user-package-db", "--simple" ] ""
     return $ BS.pack libs
