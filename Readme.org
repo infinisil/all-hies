@@ -101,13 +101,6 @@ in {
 
 There is a [[https://github.com/haskell/haskell-ide-engine/pull/1126][HIE PR]] for using @mpickering's [[https://github.com/mpickering/hie-bios][hie-bios]]. This PR can be built with by using the ~bios~ attribute, e.g. ~all-hies.bios.selection { selector  p: { inherit (p) ghc865; }; }~.
 
-Due to a git reference having been removed, you need to run this command to get the unbuildable paths from the cache if you don't have the cache enabled by default:
-#+BEGIN_SRC bash
-nix-store -r /nix/store/hji603fygfz3a5kkkkzwrf3cfgjpj9d6-haskell-ide-engine-eb3d32e \
-  --option substituters https://all-hies.cachix.org \
-  --option trusted-public-keys all-hies.cachix.org-1:JjrzAOEUsD9ZMt8fdFbzo3jNAyEWlPAwdVuHw4RD43k=
-#+END_SRC
-
 ** Updating this repository
 
 This section is only for all-hies developers and not intended for end users.
