@@ -7,8 +7,9 @@ import           Control.Monad.Reader
 import           Data.Aeson                 (decode)
 import qualified Data.ByteString.Lazy.Char8 as BS
 import           Data.Char                  (isDigit, isHexDigit)
-import           Data.List                  (intercalate, isPrefixOf)
+import           Data.List                  (intercalate, isPrefixOf, sortOn)
 import           Data.Maybe
+import           Data.Ord                   (Down(..))
 import           Data.Time
 import           Distribution.System        (Arch (..), OS (..), Platform (..))
 import           Network.HTTP.Client
@@ -215,7 +216,7 @@ regenerate root revision = do
   liftIO $ putStrLn $ "Writing " ++ revName ++ " to " ++ root ++ "stack2nix/revision"
   liftIO $ writeFile (root </> "stack2nix/revision") revName
   files <- listRepoFiles hieRepo
-  let versions = mapMaybe (stackPathRegex `match`) files
+  let versions = sortOn Down (mapMaybe (stackPathRegex `match`) files)
   liftIO $ putStrLn $ "HIE " ++ revName ++ " has ghc versions " ++ intercalate ", " (map show versions)
   forM_ versions $ \version -> do
     contents <- genS2N root hash version
