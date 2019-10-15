@@ -556,8 +556,8 @@ inherit (pkgs) zlib;};
            version = "0.8.4.1";
            src = fetchgit {
              url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1b1qf66i872yd3hzymnqfdwmsfm6mcpac80jhf1jd3jcjzrhjp4i";
-             rev = "eb3d32e32b54797e23595a81fd0118690d43fcce";
+             sha256 = "1jflh6y5z0cc5bwzscax8r3c4x1s190aa5i87azsxsy4zwmlif0m";
+             rev = "2ff38936999831641209a086751f9b41732690ea";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/HaRe; echo source root reset to $sourceRoot";
@@ -5245,8 +5245,8 @@ inherit (pkgs.xorg) libXfixes;};
            version = "0.9.0.0";
            src = fetchgit {
              url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1b1qf66i872yd3hzymnqfdwmsfm6mcpac80jhf1jd3jcjzrhjp4i";
-             rev = "eb3d32e32b54797e23595a81fd0118690d43fcce";
+             sha256 = "1jflh6y5z0cc5bwzscax8r3c4x1s190aa5i87azsxsy4zwmlif0m";
+             rev = "2ff38936999831641209a086751f9b41732690ea";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/cabal-helper; echo source root reset to $sourceRoot";
@@ -11346,8 +11346,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "5.9.0.0";
            src = fetchgit {
              url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1b1qf66i872yd3hzymnqfdwmsfm6mcpac80jhf1jd3jcjzrhjp4i";
-             rev = "eb3d32e32b54797e23595a81fd0118690d43fcce";
+             sha256 = "1jflh6y5z0cc5bwzscax8r3c4x1s190aa5i87azsxsy4zwmlif0m";
+             rev = "2ff38936999831641209a086751f9b41732690ea";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod; echo source root reset to $sourceRoot";
@@ -11379,8 +11379,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "5.9.0.0";
            src = fetchgit {
              url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1b1qf66i872yd3hzymnqfdwmsfm6mcpac80jhf1jd3jcjzrhjp4i";
-             rev = "eb3d32e32b54797e23595a81fd0118690d43fcce";
+             sha256 = "1jflh6y5z0cc5bwzscax8r3c4x1s190aa5i87azsxsy4zwmlif0m";
+             rev = "2ff38936999831641209a086751f9b41732690ea";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod/core; echo source root reset to $sourceRoot";
@@ -11444,8 +11444,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "5.9.0.0";
            src = fetchgit {
              url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1b1qf66i872yd3hzymnqfdwmsfm6mcpac80jhf1jd3jcjzrhjp4i";
-             rev = "eb3d32e32b54797e23595a81fd0118690d43fcce";
+             sha256 = "1jflh6y5z0cc5bwzscax8r3c4x1s190aa5i87azsxsy4zwmlif0m";
+             rev = "2ff38936999831641209a086751f9b41732690ea";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod/ghc-project-types; echo source root reset to $sourceRoot";
@@ -12674,8 +12674,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "1.0.0.0";
            src = fetchgit {
              url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1b1qf66i872yd3hzymnqfdwmsfm6mcpac80jhf1jd3jcjzrhjp4i";
-             rev = "eb3d32e32b54797e23595a81fd0118690d43fcce";
+             sha256 = "1jflh6y5z0cc5bwzscax8r3c4x1s190aa5i87azsxsy4zwmlif0m";
+             rev = "2ff38936999831641209a086751f9b41732690ea";
              fetchSubmodules = true;
            };
            configureFlags = [ "-fpedantic" ];
@@ -13189,7 +13189,7 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
       "hie-bios" = callPackage
         ({ mkDerivation, base, base16-bytestring, bytestring, containers
          , cryptohash-sha1, deepseq, directory, extra, fetchgit, file-embed
-         , filepath, ghc, process, stdenv, temporary, text, time
+         , filepath, ghc, hslogger, process, stdenv, temporary, text, time
          , transformers, unix-compat, unordered-containers, vector, yaml
          }:
          mkDerivation {
@@ -13197,8 +13197,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "0.2.1";
            src = fetchgit {
              url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1b1qf66i872yd3hzymnqfdwmsfm6mcpac80jhf1jd3jcjzrhjp4i";
-             rev = "eb3d32e32b54797e23595a81fd0118690d43fcce";
+             sha256 = "1jflh6y5z0cc5bwzscax8r3c4x1s190aa5i87azsxsy4zwmlif0m";
+             rev = "2ff38936999831641209a086751f9b41732690ea";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./hie-bios; echo source root reset to $sourceRoot";
@@ -13206,8 +13206,9 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            isExecutable = true;
            libraryHaskellDepends = [
              base base16-bytestring bytestring containers cryptohash-sha1
-             deepseq directory extra file-embed filepath ghc process temporary
-             text time transformers unix-compat unordered-containers vector yaml
+             deepseq directory extra file-embed filepath ghc hslogger process
+             temporary text time transformers unix-compat unordered-containers
+             vector yaml
            ];
            executableHaskellDepends = [ base directory filepath ghc ];
            doHaddock = false;
@@ -13229,8 +13230,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "0.12.0.0";
            src = fetchgit {
              url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1b1qf66i872yd3hzymnqfdwmsfm6mcpac80jhf1jd3jcjzrhjp4i";
-             rev = "eb3d32e32b54797e23595a81fd0118690d43fcce";
+             sha256 = "1jflh6y5z0cc5bwzscax8r3c4x1s190aa5i87azsxsy4zwmlif0m";
+             rev = "2ff38936999831641209a086751f9b41732690ea";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/hie-plugin-api; echo source root reset to $sourceRoot";
@@ -14076,8 +14077,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "hspec-core";
            version = "2.5.5";
            sha256 = "bd947f39c90a1dfeb943ee02c1edf7a6dcd26cb6abcf3a7de4498b612fc5d9ed";
-           revision = "1";
-           editedCabalFile = "1fifkdjhzrvwsx27qcsj0jam66sswjas5vfrzmb75z0xqyg5lpr7";
+           revision = "2";
+           editedCabalFile = "12rlyhiwp5lra0a28x0vgkw33brbavc0fn98s8gankf5p8idpfky";
            libraryHaskellDepends = [
              ansi-terminal array base call-stack clock deepseq directory
              filepath hspec-expectations HUnit QuickCheck quickcheck-io random
