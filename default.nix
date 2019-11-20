@@ -1,6 +1,7 @@
 # nixpkgs used only for library functions, not for dependencies
 { pkgs ? import ./nixpkgs.nix
 , lib ? pkgs.lib
+, fetchFromGitHub ? pkgs.fetchFromGitHub
 }:
 
 let
@@ -33,9 +34,10 @@ let
     pkgs = let
       rev = builtins.readFile (./nixpkgsForGhc + "/${ghcVersion}");
       sha256 = builtins.readFile (./generated + "/${buildName}/nixpkgsHashes/${rev}");
-    in import (fetchTarball {
-      url = "https://github.com/NixOS/nixpkgs/tarball/${rev}";
-      inherit sha256;
+    in import (fetchFromGitHub {
+      owner = "NixOS";
+      repo = "nixpkgs";
+      inherit sha256 rev;
     }) { config = {}; overlays = []; };
 
     # Returns a Haskell overlay that sets all ghc base libraries to null
