@@ -788,9 +788,9 @@ inherit (pkgs) zlib;};
            pname = "HaRe";
            version = "0.8.4.1";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/HaRe; echo source root reset to $sourceRoot";
@@ -4447,6 +4447,8 @@ inherit (pkgs.xorg) libXinerama; inherit (pkgs.xorg) libXrender;};
            pname = "avro";
            version = "0.3.5.1";
            sha256 = "c805534d4829dba8055985284a07436cb77481dfc4554d91937d8b0f864afc90";
+           revision = "1";
+           editedCabalFile = "07h4502vdr0ybxqv1hcwrnm1f4bhblbdmh3n58hb198jx91rlfpf";
            libraryHaskellDepends = [
              aeson array base base16-bytestring binary bytestring containers
              data-binary-ieee754 entropy fail hashable mtl pure-zlib scientific
@@ -5859,8 +5861,8 @@ inherit (pkgs.xorg) libXfixes;};
            pname = "bsb-http-chunked";
            version = "0.0.0.4";
            sha256 = "148309e23eb8b261c1de374712372d62d8c8dc8ee504c392809c7ec33c0a0e7c";
-           revision = "1";
-           editedCabalFile = "07k9422yaw7rz66awmc20ni17xw2bd1pn48ja79c66d5va89f6wz";
+           revision = "2";
+           editedCabalFile = "0bz62lxdbnwkfr1d4ngm8xi4y1ndpdflbv71s6h43vp5lbd546hr";
            libraryHaskellDepends = [ base bytestring ];
            doHaddock = false;
            doCheck = false;
@@ -6278,9 +6280,9 @@ inherit (pkgs.xorg) libXfixes;};
            pname = "cabal-helper";
            version = "1.0.0.0";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/cabal-helper; echo source root reset to $sourceRoot";
@@ -14598,9 +14600,9 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "ghc-project-types";
            version = "5.9.0.0";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod/ghc-project-types; echo source root reset to $sourceRoot";
@@ -16239,9 +16241,9 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "haskell-ide-engine";
            version = "1.0.0.0";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            configureFlags = [ "-fpedantic" ];
@@ -17121,9 +17123,9 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "hie-bios";
            version = "0.2.1";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./hie-bios; echo source root reset to $sourceRoot";
@@ -17155,9 +17157,9 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "hie-plugin-api";
            version = "1.0.0.0";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/hie-plugin-api; echo source root reset to $sourceRoot";

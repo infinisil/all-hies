@@ -668,9 +668,9 @@ inherit (pkgs) zlib;};
            pname = "HaRe";
            version = "0.8.4.1";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/HaRe; echo source root reset to $sourceRoot";
@@ -5842,8 +5842,8 @@ inherit (pkgs.xorg) libXfixes;};
            pname = "bsb-http-chunked";
            version = "0.0.0.4";
            sha256 = "148309e23eb8b261c1de374712372d62d8c8dc8ee504c392809c7ec33c0a0e7c";
-           revision = "1";
-           editedCabalFile = "07k9422yaw7rz66awmc20ni17xw2bd1pn48ja79c66d5va89f6wz";
+           revision = "2";
+           editedCabalFile = "0bz62lxdbnwkfr1d4ngm8xi4y1ndpdflbv71s6h43vp5lbd546hr";
            libraryHaskellDepends = [ base bytestring ];
            doHaddock = false;
            doCheck = false;
@@ -6297,9 +6297,9 @@ inherit (pkgs.xorg) libXfixes;};
            pname = "cabal-helper";
            version = "1.0.0.0";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/cabal-helper; echo source root reset to $sourceRoot";
@@ -14099,8 +14099,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "ghc-exactprint";
-           version = "0.5.8.2";
-           sha256 = "961dde178df96c123d12a362f64f7ef43228176fd3a1b876a8fecc75df8694a3";
+           version = "0.6.2";
+           sha256 = "32f13e5788576d971ad0a14cdea7e8d0c3f4980dfcb060cebdea8d29f77166b0";
            isLibrary = true;
            isExecutable = true;
            libraryHaskellDepends = [
@@ -14179,9 +14179,9 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "ghc-project-types";
            version = "5.9.0.0";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./submodules/ghc-mod/ghc-project-types; echo source root reset to $sourceRoot";
@@ -15788,9 +15788,9 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "haskell-ide-engine";
            version = "1.0.0.0";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            configureFlags = [ "-fpedantic" ];
@@ -16510,9 +16510,9 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "hie-bios";
            version = "0.2.1";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/./hie-bios; echo source root reset to $sourceRoot";
@@ -16544,9 +16544,9 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "hie-plugin-api";
            version = "1.0.0.0";
            src = fetchgit {
-             url = "https://github.com/mpickering/haskell-ide-engine";
-             sha256 = "1mar8wj5w73slsi9kkv74iy16g29in9in3rhkmj9q96d5vls4j39";
-             rev = "41b9cabcff790da4425ed7fab7cfb618e79bfd04";
+             url = "https://github.com/reactormonk/haskell-ide-engine";
+             sha256 = "057aqcmdy9nhgdxwy6wckacah8ra3424mn73ybirvk40zz7p59n3";
+             rev = "dc4e1464a52df3d8ce560abf84f51cd401c94c5e";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/hie-plugin-api; echo source root reset to $sourceRoot";
@@ -28793,8 +28793,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "recursion-schemes";
            version = "5.1.3";
            sha256 = "b21736e54b1d5fb0149624e95f2d8d8fd3413bb0972eda6a70e5753d3c9f1528";
-           revision = "1";
-           editedCabalFile = "0zxcmga4fy42arbyv1kzbyfnsghnll3prkpva58x654x4cg4diwk";
+           revision = "2";
+           editedCabalFile = "01q18gplv5k328qf74innnx2z2p15pg5nc6sikxq6fkkw4v3rkyb";
            libraryHaskellDepends = [
              base base-orphans comonad free template-haskell th-abstraction
              transformers
