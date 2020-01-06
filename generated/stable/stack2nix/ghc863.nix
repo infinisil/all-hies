@@ -591,40 +591,6 @@ inherit (pkgs) zlib;};
            description = "Approximate equality for floating point numbers with HUnit";
            license = stdenv.lib.licenses.bsd3;
          }) {};
-      "HaRe" = callPackage
-        ({ mkDerivation, base, Cabal, cabal-helper, containers, directory
-         , fetchgit, filepath, ghc, ghc-exactprint, gitrev, hie-plugin-api
-         , hslogger, monad-control, mtl, optparse-applicative
-         , optparse-simple, stdenv, Strafunski-StrategyLib, syb, syz
-         }:
-         mkDerivation {
-           pname = "HaRe";
-           version = "0.8.4.1";
-           src = fetchgit {
-             url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "01hc1iya9gzi2xdqf8p6y11y2cz6kkwdl9almp975iaf3y7fyzjw";
-             rev = "064c62f2c192b46dd4edc569899afb80b6ebe1b7";
-             fetchSubmodules = true;
-           };
-           postUnpack = "sourceRoot+=/./submodules/HaRe; echo source root reset to $sourceRoot";
-           isLibrary = true;
-           isExecutable = true;
-           enableSeparateDataOutput = true;
-           libraryHaskellDepends = [
-             base cabal-helper containers directory filepath ghc ghc-exactprint
-             hie-plugin-api hslogger monad-control mtl Strafunski-StrategyLib
-             syb syz
-           ];
-           executableHaskellDepends = [
-             base Cabal gitrev hie-plugin-api mtl optparse-applicative
-             optparse-simple
-           ];
-           doHaddock = false;
-           doCheck = false;
-           homepage = "https://github.com/RefactoringTools/HaRe/wiki";
-           description = "the Haskell Refactorer";
-           license = stdenv.lib.licenses.bsd3;
-         }) {};
       "HandsomeSoup" = callPackage
         ({ mkDerivation, base, containers, HTTP, hxt, hxt-http, mtl
          , network, network-uri, parsec, stdenv, transformers
@@ -6088,6 +6054,21 @@ inherit (pkgs.xorg) libXfixes;};
            description = "A very efficient ByteString builder implementation based on the binary tree";
            license = stdenv.lib.licenses.mit;
          }) {};
+      "bytestring-trie" = callPackage
+        ({ mkDerivation, base, binary, bytestring, stdenv }:
+         mkDerivation {
+           pname = "bytestring-trie";
+           version = "0.2.5.0";
+           sha256 = "0891bd31ff60670ab6849d6dd04a73095e20e7e6bab94818857dc6acfcb5feca";
+           revision = "1";
+           editedCabalFile = "1qpv52ywp8r30s3m9qyjiqiwa6clg3zp095yhs2d4533amprryly";
+           libraryHaskellDepends = [ base binary bytestring ];
+           doHaddock = false;
+           doCheck = false;
+           homepage = "http://wrengr.org";
+           description = "An efficient finite map from (byte)strings to values";
+           license = stdenv.lib.licenses.bsd3;
+         }) {};
       "bzlib" = callPackage
         ({ mkDerivation, base, bytestring, bzip2, stdenv }:
          mkDerivation {
@@ -6160,38 +6141,28 @@ inherit (pkgs.xorg) libXfixes;};
            license = stdenv.lib.licenses.bsd3;
          }) {};
       "cabal-helper" = callPackage
-        ({ mkDerivation, base, bytestring, Cabal, cabal-install, cabal-plan
-         , containers, directory, fetchgit, filepath, mtl, pretty-show
-         , process, semigroupoids, stdenv, template-haskell, temporary, text
+        ({ mkDerivation, base, bytestring, Cabal, cabal-plan, clock
+         , containers, directory, filepath, mtl, process, semigroupoids
+         , semigroups, SHA, stdenv, template-haskell, temporary, text, time
          , transformers, unix, unix-compat, utf8-string
          }:
          mkDerivation {
            pname = "cabal-helper";
-           version = "0.9.0.0";
-           src = fetchgit {
-             url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "01hc1iya9gzi2xdqf8p6y11y2cz6kkwdl9almp975iaf3y7fyzjw";
-             rev = "064c62f2c192b46dd4edc569899afb80b6ebe1b7";
-             fetchSubmodules = true;
-           };
-           postUnpack = "sourceRoot+=/./submodules/cabal-helper; echo source root reset to $sourceRoot";
+           version = "1.0.0.0";
+           sha256 = "54f2a2b3a9c4a8a330ca3859e518f50775b2fc925cf30cac7e686d50b417f9d1";
+           revision = "1";
+           editedCabalFile = "0r1lc3rih1n8y5byhls4daa5ka8x8aj4vfrwr8lm41m3l4l19mb9";
            isLibrary = true;
            isExecutable = true;
-           setupHaskellDepends = [ base Cabal ];
            libraryHaskellDepends = [
-             base Cabal cabal-plan containers directory filepath mtl process
-             semigroupoids transformers unix unix-compat
+             base bytestring Cabal cabal-plan clock containers directory
+             filepath mtl process semigroupoids semigroups SHA template-haskell
+             temporary text time transformers unix unix-compat utf8-string
            ];
-           executableHaskellDepends = [
-             base bytestring Cabal cabal-plan containers directory filepath mtl
-             pretty-show process template-haskell temporary text transformers
-             unix unix-compat utf8-string
-           ];
-           executableToolDepends = [ cabal-install ];
            doHaddock = false;
            doCheck = false;
-           description = "Simple interface to some of Cabal's configuration state, mainly used by ghc-mod";
-           license = stdenv.lib.licenses.agpl3;
+           description = "Give Haskell development tools access to Cabal project environment";
+           license = stdenv.lib.licenses.asl20;
          }) {};
       "cabal-install" = callPackage
         ({ mkDerivation, array, async, base, base16-bytestring, binary
@@ -6236,10 +6207,10 @@ inherit (pkgs.xorg) libXfixes;};
          }:
          mkDerivation {
            pname = "cabal-plan";
-           version = "0.4.0.0";
-           sha256 = "61dd996ba3659720d6ea1bce4b33d17342cb16d042996e8ad932a1b061077331";
+           version = "0.5.0.0";
+           sha256 = "18c6cc4d79ef73f932f8cc410a5f8c99cff6538aa7f21ca8b76443e93825caed";
            revision = "1";
-           editedCabalFile = "161vgfbwm8psqa6ncs12j7sn5lqjag1xi62vllvp8xbz9lcvbchb";
+           editedCabalFile = "0nnh6qq36cpfwzqrv1i1cn93n6n32nbl6ddp0y22jmmxnx9xsrvp";
            configureFlags = [ "-fexe" ];
            isLibrary = true;
            isExecutable = true;
@@ -6253,8 +6224,8 @@ inherit (pkgs.xorg) libXfixes;};
            ];
            doHaddock = false;
            doCheck = false;
-           description = "Library and utiltity for processing cabal's plan.json file";
-           license = stdenv.lib.licenses.gpl3;
+           description = "Library and utility for processing cabal's plan.json file";
+           license = "GPL-2.0-or-later AND BSD-3-Clause";
          }) {};
       "cabal-rpm" = callPackage
         ({ mkDerivation, base, bytestring, Cabal, directory, filepath
@@ -11954,15 +11925,15 @@ inherit (pkgs.xorg) libXfixes;};
            license = stdenv.lib.licenses.bsd3;
          }) {};
       "extra" = callPackage
-        ({ mkDerivation, base, clock, directory, filepath, process, stdenv
-         , time, unix
+        ({ mkDerivation, base, clock, directory, filepath, process
+         , semigroups, stdenv, time, unix
          }:
          mkDerivation {
            pname = "extra";
-           version = "1.6.14";
-           sha256 = "a60641530d96653ecc365aa042f4061892154995915d91f432ea5a2e3aaf129c";
+           version = "1.6.18";
+           sha256 = "9e81788ea870cc94e0cd809f3258aec0a361981783f59b122aeea20801256d4b";
            libraryHaskellDepends = [
-             base clock directory filepath process time unix
+             base clock directory filepath process semigroups time unix
            ];
            doHaddock = false;
            doCheck = false;
@@ -13207,6 +13178,8 @@ inherit (pkgs) libfreenect;};
            pname = "fused-effects";
            version = "0.1.2.1";
            sha256 = "d6274dba440c69c2d0d5aaee05f99d00754094581c3d1cc1176586e8be289902";
+           revision = "1";
+           editedCabalFile = "16qlqgxj2y54kkyhpfv3jjca9hzis9vvbz3mcx9cgg8iy2ffx65n";
            libraryHaskellDepends = [ base deepseq MonadRandom random ];
            doHaddock = false;
            doCheck = false;
@@ -13846,8 +13819,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "ghc-exactprint";
-           version = "0.5.8.2";
-           sha256 = "961dde178df96c123d12a362f64f7ef43228176fd3a1b876a8fecc75df8694a3";
+           version = "0.6.2";
+           sha256 = "32f13e5788576d971ad0a14cdea7e8d0c3f4980dfcb060cebdea8d29f77166b0";
            isLibrary = true;
            isExecutable = true;
            libraryHaskellDepends = [
@@ -13879,71 +13852,6 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            homepage = "https://github.com/digital-asset/ghc-lib";
            description = "The GHC API, decoupled from GHC versions";
            license = stdenv.lib.licenses.bsd3;
-         }) {};
-      "ghc-mod" = callPackage
-        ({ mkDerivation, base, binary, bytestring, Cabal, cabal-doctest
-         , cabal-helper, containers, deepseq, directory, extra, fclabels
-         , fetchgit, filepath, ghc, ghc-boot, ghc-mod-core, ghc-paths
-         , monad-control, monad-journal, mtl, old-time, optparse-applicative
-         , pipes, process, safe, semigroups, split, stdenv, syb
-         , template-haskell, temporary, text, time, transformers
-         , transformers-base
-         }:
-         mkDerivation {
-           pname = "ghc-mod";
-           version = "5.9.0.0";
-           src = fetchgit {
-             url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "01hc1iya9gzi2xdqf8p6y11y2cz6kkwdl9almp975iaf3y7fyzjw";
-             rev = "064c62f2c192b46dd4edc569899afb80b6ebe1b7";
-             fetchSubmodules = true;
-           };
-           postUnpack = "sourceRoot+=/./submodules/ghc-mod; echo source root reset to $sourceRoot";
-           enableSeparateDataOutput = true;
-           setupHaskellDepends = [ base Cabal cabal-doctest ];
-           libraryHaskellDepends = [
-             base binary bytestring cabal-helper containers deepseq directory
-             extra fclabels filepath ghc ghc-boot ghc-mod-core ghc-paths
-             monad-control monad-journal mtl old-time optparse-applicative pipes
-             process safe semigroups split syb template-haskell temporary text
-             time transformers transformers-base
-           ];
-           doHaddock = false;
-           doCheck = false;
-           homepage = "https://github.com/DanielG/ghc-mod";
-           description = "Happy Haskell Hacking";
-           license = stdenv.lib.licenses.agpl3;
-         }) {};
-      "ghc-mod-core" = callPackage
-        ({ mkDerivation, base, binary, bytestring, cabal-helper, containers
-         , deepseq, directory, extra, fclabels, fetchgit, filepath, ghc
-         , ghc-boot, ghc-paths, ghc-project-types, monad-control
-         , monad-journal, mtl, optparse-applicative, pipes, process, safe
-         , split, stdenv, syb, template-haskell, temporary, time
-         , transformers, transformers-base
-         }:
-         mkDerivation {
-           pname = "ghc-mod-core";
-           version = "5.9.0.0";
-           src = fetchgit {
-             url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "01hc1iya9gzi2xdqf8p6y11y2cz6kkwdl9almp975iaf3y7fyzjw";
-             rev = "064c62f2c192b46dd4edc569899afb80b6ebe1b7";
-             fetchSubmodules = true;
-           };
-           postUnpack = "sourceRoot+=/./submodules/ghc-mod/core; echo source root reset to $sourceRoot";
-           libraryHaskellDepends = [
-             base binary bytestring cabal-helper containers deepseq directory
-             extra fclabels filepath ghc ghc-boot ghc-paths ghc-project-types
-             monad-control monad-journal mtl optparse-applicative pipes process
-             safe split syb template-haskell temporary time transformers
-             transformers-base
-           ];
-           doHaddock = false;
-           doCheck = false;
-           homepage = "https://github.com/DanielG/ghc-mod";
-           description = "Happy Haskell Hacking";
-           license = stdenv.lib.licenses.agpl3;
          }) {};
       "ghc-paths" = callPackage
         ({ mkDerivation, base, Cabal, directory, stdenv }:
@@ -13978,37 +13886,6 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            homepage = "https://github.com/maoe/ghc-prof";
            description = "Library for parsing GHC time and allocation profiling reports";
            license = stdenv.lib.licenses.bsd3;
-         }) {};
-      "ghc-project-types" = callPackage
-        ({ mkDerivation, base, binary, bytestring, cabal-helper, containers
-         , deepseq, directory, extra, fclabels, fetchgit, filepath, ghc
-         , ghc-boot, ghc-paths, haskell-src-exts, monad-control
-         , monad-journal, mtl, optparse-applicative, pipes, process, safe
-         , split, stdenv, syb, template-haskell, temporary, time
-         , transformers, transformers-base
-         }:
-         mkDerivation {
-           pname = "ghc-project-types";
-           version = "5.9.0.0";
-           src = fetchgit {
-             url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "01hc1iya9gzi2xdqf8p6y11y2cz6kkwdl9almp975iaf3y7fyzjw";
-             rev = "064c62f2c192b46dd4edc569899afb80b6ebe1b7";
-             fetchSubmodules = true;
-           };
-           postUnpack = "sourceRoot+=/./submodules/ghc-mod/ghc-project-types; echo source root reset to $sourceRoot";
-           libraryHaskellDepends = [
-             base binary bytestring cabal-helper containers deepseq directory
-             extra fclabels filepath ghc ghc-boot ghc-paths haskell-src-exts
-             monad-control monad-journal mtl optparse-applicative pipes process
-             safe split syb template-haskell temporary time transformers
-             transformers-base
-           ];
-           doHaddock = false;
-           doCheck = false;
-           homepage = "https://github.com/DanielG/ghc-mod";
-           description = "Happy Haskell Hacking";
-           license = stdenv.lib.licenses.agpl3;
          }) {};
       "ghc-syntax-highlighter" = callPackage
         ({ mkDerivation, base, ghc, stdenv, text }:
@@ -15585,24 +15462,23 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }) {};
       "haskell-ide-engine" = callPackage
         ({ mkDerivation, aeson, apply-refact, async, base, blaze-markup
-         , brittany, bytestring, Cabal, cabal-helper, containers
-         , data-default, Diff, directory, fetchgit, filepath, floskell
-         , fold-debounce, ghc, ghc-exactprint, ghc-mod, ghc-mod-core, gitrev
-         , haddock-api, haddock-library, HaRe, haskell-lsp
-         , haskell-lsp-types, haskell-src-exts, hie-plugin-api, hlint
-         , hoogle, hsimport, hslogger, hspec, hspec-core, lens, lifted-async
-         , monad-control, monoid-subclasses, mtl, optparse-simple, parsec
-         , process, rope-utf16-splay, safe, sorted-list, stdenv, stm
-         , tagsoup, text, transformers, unix-time, unordered-containers
-         , vector, versions, yaml
+         , brittany, bytestring, bytestring-trie, Cabal, cabal-helper
+         , containers, data-default, Diff, directory, fetchgit, filepath
+         , floskell, fold-debounce, ghc, ghc-exactprint, gitrev, haddock-api
+         , haddock-library, haskell-lsp, haskell-lsp-types, haskell-src-exts
+         , hie-bios, hie-plugin-api, hlint, hoogle, hsimport, hslogger
+         , hspec, hspec-core, lens, lifted-async, monoid-subclasses, mtl
+         , optparse-simple, parsec, process, safe, sorted-list, stdenv, stm
+         , syb, tagsoup, text, transformers, unix-time, unliftio
+         , unordered-containers, vector, versions, yaml
          }:
          mkDerivation {
            pname = "haskell-ide-engine";
-           version = "0.14.0.0";
+           version = "1.0.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "01hc1iya9gzi2xdqf8p6y11y2cz6kkwdl9almp975iaf3y7fyzjw";
-             rev = "064c62f2c192b46dd4edc569899afb80b6ebe1b7";
+             sha256 = "0v87cxv63hdk1x5z4sa2bssz92ikxwn48i05a6blkq61m6iw83dm";
+             rev = "8cffda24e9ab85be9e8f06719fc5f393b617aa06";
              fetchSubmodules = true;
            };
            configureFlags = [ "-fpedantic" ];
@@ -15610,18 +15486,18 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            isExecutable = true;
            libraryHaskellDepends = [
              aeson apply-refact async base blaze-markup brittany bytestring
-             Cabal cabal-helper containers data-default Diff directory filepath
-             floskell fold-debounce ghc ghc-exactprint ghc-mod ghc-mod-core
-             gitrev haddock-api haddock-library HaRe haskell-lsp
-             haskell-lsp-types haskell-src-exts hie-plugin-api hlint hoogle
-             hsimport hslogger hspec hspec-core lens lifted-async monad-control
-             monoid-subclasses mtl optparse-simple parsec process
-             rope-utf16-splay safe sorted-list stm tagsoup text transformers
-             unix-time unordered-containers vector versions yaml
+             bytestring-trie Cabal cabal-helper containers data-default Diff
+             directory filepath floskell fold-debounce ghc ghc-exactprint gitrev
+             haddock-api haddock-library haskell-lsp haskell-lsp-types
+             haskell-src-exts hie-bios hie-plugin-api hlint hoogle hsimport
+             hslogger hspec hspec-core lens lifted-async monoid-subclasses mtl
+             optparse-simple parsec process safe sorted-list stm syb tagsoup
+             text transformers unix-time unliftio unordered-containers vector
+             versions yaml
            ];
            executableHaskellDepends = [
-             base directory ghc-mod-core haskell-lsp hie-plugin-api hslogger
-             optparse-simple process
+             base directory filepath haskell-lsp hie-bios hie-plugin-api
+             hslogger optparse-simple process yaml
            ];
            doHaddock = false;
            doCheck = false;
@@ -15651,8 +15527,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "haskell-lsp";
-           version = "0.18.0.0";
-           sha256 = "548bd06ea44b87dc645cd62150dde67aab11029fb51e971adcfad8919fbc3d61";
+           version = "0.19.0.0";
+           sha256 = "91885a0707e977ca4e6ab2bda4af3cc0ab5d7394e34c970d93e8e5d158965532";
            isLibrary = true;
            isExecutable = true;
            libraryHaskellDepends = [
@@ -15674,8 +15550,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "haskell-lsp-types";
-           version = "0.18.0.0";
-           sha256 = "387a97f8e02d6405cbbb30f87efea1cc09fe31cbd7925640a2ed3cd6fb1beafa";
+           version = "0.19.0.0";
+           sha256 = "a942ab1e504d8ae61b586c9b048e3b1422ab793bd908062332180af01beb3921";
            libraryHaskellDepends = [
              aeson base bytestring data-default deepseq filepath hashable lens
              network-uri scientific text unordered-containers
@@ -16314,30 +16190,58 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            description = "Provides cross-platform getHiddenChar function";
            license = stdenv.lib.licenses.mit;
          }) {};
+      "hie-bios" = callPackage
+        ({ mkDerivation, base, base16-bytestring, bytestring, conduit
+         , conduit-extra, containers, cryptohash-sha1, deepseq, directory
+         , extra, file-embed, filepath, ghc, hslogger, process, stdenv
+         , temporary, text, time, transformers, unix-compat
+         , unordered-containers, vector, yaml
+         }:
+         mkDerivation {
+           pname = "hie-bios";
+           version = "0.3.2";
+           sha256 = "39eec9049e0ce46b9185a653a7d6d2de17bc860470054668c78a06f8e4ce0998";
+           isLibrary = true;
+           isExecutable = true;
+           libraryHaskellDepends = [
+             base base16-bytestring bytestring conduit conduit-extra containers
+             cryptohash-sha1 deepseq directory extra file-embed filepath ghc
+             hslogger process temporary text time transformers unix-compat
+             unordered-containers vector yaml
+           ];
+           executableHaskellDepends = [ base directory filepath ghc ];
+           doHaddock = false;
+           doCheck = false;
+           homepage = "https://github.com/mpickering/hie-bios";
+           description = "Set up a GHC API session";
+           license = stdenv.lib.licenses.bsd3;
+         }) {};
       "hie-plugin-api" = callPackage
-        ({ mkDerivation, aeson, base, constrained-dynamic, containers
+        ({ mkDerivation, aeson, base, bytestring, bytestring-trie
+         , cabal-helper, constrained-dynamic, containers, cryptohash-sha1
          , data-default, Diff, directory, fetchgit, filepath, fingertree
-         , free, ghc, ghc-mod-core, ghc-project-types, haskell-lsp, hslogger
-         , monad-control, mtl, rope-utf16-splay, stdenv, stm, syb, text
-         , transformers, unix, unordered-containers
+         , free, ghc, haskell-lsp, hie-bios, hslogger, monad-control, mtl
+         , process, sorted-list, stdenv, stm, syb, text, transformers
+         , transformers-base, unix, unliftio, unordered-containers, yaml
          }:
          mkDerivation {
            pname = "hie-plugin-api";
-           version = "0.14.0.0";
+           version = "1.0.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "01hc1iya9gzi2xdqf8p6y11y2cz6kkwdl9almp975iaf3y7fyzjw";
-             rev = "064c62f2c192b46dd4edc569899afb80b6ebe1b7";
+             sha256 = "0v87cxv63hdk1x5z4sa2bssz92ikxwn48i05a6blkq61m6iw83dm";
+             rev = "8cffda24e9ab85be9e8f06719fc5f393b617aa06";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/hie-plugin-api; echo source root reset to $sourceRoot";
            configureFlags = [ "-fpedantic" ];
            libraryHaskellDepends = [
-             aeson base constrained-dynamic containers data-default Diff
-             directory filepath fingertree free ghc ghc-mod-core
-             ghc-project-types haskell-lsp hslogger monad-control mtl
-             rope-utf16-splay stm syb text transformers unix
-             unordered-containers
+             aeson base bytestring bytestring-trie cabal-helper
+             constrained-dynamic containers cryptohash-sha1 data-default Diff
+             directory filepath fingertree free ghc haskell-lsp hie-bios
+             hslogger monad-control mtl process sorted-list stm syb text
+             transformers transformers-base unix unliftio unordered-containers
+             yaml
            ];
            doHaddock = false;
            doCheck = false;
@@ -21690,18 +21594,18 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
         ({ mkDerivation, aeson, aeson-pretty, ansi-terminal, async, base
          , bytestring, conduit, conduit-parse, containers, data-default
          , Diff, directory, filepath, haskell-lsp, lens, mtl
-         , parser-combinators, process, rope-utf16-splay, stdenv, text
-         , transformers, unix, unordered-containers
+         , parser-combinators, process, stdenv, text, transformers, unix
+         , unordered-containers
          }:
          mkDerivation {
            pname = "lsp-test";
-           version = "0.8.2.0";
-           sha256 = "4321a8fdc1ff287aec6451d1a21b1daed4699c8acf9c88766a733aa2f356c29c";
+           version = "0.10.0.0";
+           sha256 = "4ff6eb0c0ea8db62226279f1562b786539a8b85e165d41bab85290df0bfe443b";
            libraryHaskellDepends = [
              aeson aeson-pretty ansi-terminal async base bytestring conduit
              conduit-parse containers data-default Diff directory filepath
-             haskell-lsp lens mtl parser-combinators process rope-utf16-splay
-             text transformers unix unordered-containers
+             haskell-lsp lens mtl parser-combinators process text transformers
+             unix unordered-containers
            ];
            doHaddock = false;
            doCheck = false;
@@ -25538,8 +25442,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
         ({ mkDerivation, base, stdenv }:
          mkDerivation {
            pname = "parser-combinators";
-           version = "1.0.1";
-           sha256 = "edf5ab8fa69a04334baa8707252036563a8339a96a86956c90febe93830cea32";
+           version = "1.2.1";
+           sha256 = "03162e40cde50253529fa452165b681d5064d03ad07992800702156adfb6254d";
            libraryHaskellDepends = [ base ];
            doHaddock = false;
            doCheck = false;
@@ -29039,8 +28943,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "repa";
            version = "3.4.1.4";
            sha256 = "43607a5de4b89b8e58bfcbc261445d89fa40b685d43952797704b80d09e5a39e";
-           revision = "2";
-           editedCabalFile = "16kyy7ck3yki0mlcap0bbiadcn18yn6x90m4s2prkasi9ip0pcs8";
+           revision = "3";
+           editedCabalFile = "17hxj42cm82sac42by78jgbjjn5r3qv7n4919llaq17a2k1np0sw";
            libraryHaskellDepends = [
              base bytestring ghc-prim QuickCheck template-haskell vector
            ];
@@ -29056,6 +28960,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "repa-algorithms";
            version = "3.4.1.3";
            sha256 = "de586fe7e14e0e000da50022e2129cabfd47773ba7844753c535c982f20e0fae";
+           revision = "1";
+           editedCabalFile = "0lvb1sn95qca9m1b8cy0a2j9gjzqm8g5v68ykglffjskv78d0jfm";
            libraryHaskellDepends = [ base repa vector ];
            doHaddock = false;
            doCheck = false;
@@ -29071,8 +28977,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "repa-io";
            version = "3.4.1.1";
            sha256 = "b5dbca96a988fb8bd918288ea1cfcf215fe46062e45001b209603b63a39ba9da";
-           revision = "3";
-           editedCabalFile = "027vn7an0hm3ysnzk19y0dbjpah0wpg96dgb55149x1310vwybxl";
+           revision = "4";
+           editedCabalFile = "1lswfxmfn31gm2ayqwns9q9kpbad69scxpq6ybyzxkb9jd0jx4bl";
            libraryHaskellDepends = [
              base binary bmp bytestring old-time repa vector
            ];
@@ -29520,6 +29426,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "rvar";
            version = "0.2.0.3";
            sha256 = "d78aaf2ffdba182dda95d1692fec7abc5d77fa371120618a397b5675438c6bc0";
+           revision = "1";
+           editedCabalFile = "1ifwwjlhc3l8ycjmmarw6v1nm7jxpgqw2ly0q35idlj0jc0nbxn6";
            libraryHaskellDepends = [
              base MonadPrompt mtl random-source transformers
            ];
@@ -31829,8 +31737,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "snap-core";
            version = "1.0.4.0";
            sha256 = "b902602f8422b22a1986bdcf2c2bf72148efc84365b048d832cb42bcf2eb7436";
-           revision = "1";
-           editedCabalFile = "1nw74vpfag6gdh66kq82a0kdb05c2xnwcfacwlcg77j24gxcgi6s";
+           revision = "2";
+           editedCabalFile = "032aijdfc2b26m9fk48xa8xp61xlpxjj07rkzz34izzivqjixl1q";
            libraryHaskellDepends = [
              attoparsec base bytestring bytestring-builder case-insensitive
              containers directory filepath hashable HUnit io-streams lifted-base
@@ -36342,10 +36250,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
         ({ mkDerivation, base, stdenv, unix }:
          mkDerivation {
            pname = "unix-compat";
-           version = "0.5.1";
-           sha256 = "a39d0c79dd906763770b80ba5b6c5cb710e954f894350e9917de0d73f3a19c52";
-           revision = "1";
-           editedCabalFile = "0c4ak3y72nhv3nf025cyfi1dri2wjmsal3icjwj0aczmlb0imwrd";
+           version = "0.5.2";
+           sha256 = "659a4e442f71505d45b0d0fb28a347aa1ac5e1f39feaea5d58e674e5d2ce0ba9";
            libraryHaskellDepends = [ base unix ];
            doHaddock = false;
            doCheck = false;
@@ -36417,8 +36323,10 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
         ({ mkDerivation, base, deepseq, hashable, stdenv }:
          mkDerivation {
            pname = "unordered-containers";
-           version = "0.2.9.0";
-           sha256 = "6730cb5c4a3e953e2c199d6425be08fd088ff0089a3e140d63226c052e318250";
+           version = "0.2.10.0";
+           sha256 = "65f117bdbdea9efc75fb9fd539873de7687e005d8898bb21821020a4b383c573";
+           revision = "1";
+           editedCabalFile = "01727lm2spbqfn0rl89zv9zhpsmnls0kmizyckqf5nc3j9d0k6sy";
            libraryHaskellDepends = [ base deepseq hashable ];
            doHaddock = false;
            doCheck = false;
@@ -39158,22 +39066,20 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }) {};
       "yaml" = callPackage
         ({ mkDerivation, aeson, attoparsec, base, bytestring, conduit
-         , containers, directory, filepath, resourcet, scientific
-         , semigroups, stdenv, template-haskell, text, transformers
+         , containers, directory, filepath, libyaml, mtl, resourcet
+         , scientific, stdenv, template-haskell, text, transformers
          , unordered-containers, vector
          }:
          mkDerivation {
            pname = "yaml";
-           version = "0.8.32";
-           sha256 = "dc20f863deb4ee75395bf1f78268781db76be6209af67b70c05f6e1a09f47a31";
-           revision = "1";
-           editedCabalFile = "0kphbk088w63mdghp87nf647xywyz19is34mk9bw7wqq9j77i7nb";
-           configureFlags = [ "-f-system-libyaml" ];
+           version = "0.11.1.2";
+           sha256 = "0cfedbcf28dfe262671b6ab8d5568c81436f1681c3882d9f9c868a64cff91709";
+           configureFlags = [ "-fsystem-libyaml" ];
            isLibrary = true;
            isExecutable = true;
            libraryHaskellDepends = [
              aeson attoparsec base bytestring conduit containers directory
-             filepath resourcet scientific semigroups template-haskell text
+             filepath libyaml mtl resourcet scientific template-haskell text
              transformers unordered-containers vector
            ];
            doHaddock = false;
