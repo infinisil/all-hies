@@ -9,6 +9,26 @@
 # reproducibility. Only seems useful for one-off testing or so.
 
 storepaths=(
+  # 1.0.0.0
+  ## x86_64-linux
+  /nix/store/sk086bkr8f4yjg0715c8k9lx907r9j5h-haskell-ide-engine-ghc842-1.0.0.0
+  /nix/store/shvam04y1xxma6vs3scx8rvxy3nab0jj-haskell-ide-engine-ghc843-1.0.0.0
+  /nix/store/sdzx9hbslsdk0z5k21x7259v6mihx07h-haskell-ide-engine-ghc844-1.0.0.0
+  /nix/store/jcqafgk3h8h60hv4z3x7kp5fyh2h90vb-haskell-ide-engine-ghc861-1.0.0.0
+  /nix/store/ihfvldzicc05g7mdx9y4jix6wxldcyb3-haskell-ide-engine-ghc862-1.0.0.0
+  /nix/store/ik2sn2bqgn0wh2k1sgi92ag3dmbshawd-haskell-ide-engine-ghc863-1.0.0.0
+  /nix/store/b6hjjms6lzfpnwqiflaqa29pf971ii5q-haskell-ide-engine-ghc864-1.0.0.0
+  /nix/store/gbyjamvg0vz00izjl9cddgynpz34g13d-haskell-ide-engine-ghc865-1.0.0.0
+  ## x86_64-darwin
+  /nix/store/hs35i7a8akw92s33535pn7s9ll03h92m-haskell-ide-engine-ghc842-1.0.0.0
+  /nix/store/kr44by4jhhmsjgdzzlgvsb1pm4b3pi53-haskell-ide-engine-ghc843-1.0.0.0
+  /nix/store/xr80fkvi9a6d1kcz15z9193909d5z45f-haskell-ide-engine-ghc844-1.0.0.0
+  /nix/store/0lmy07adcb22gy63cwllrr1hbwxmpz1j-haskell-ide-engine-ghc861-1.0.0.0
+  /nix/store/vrj0l16jg5x8l7scphzpw74845ync6b7-haskell-ide-engine-ghc862-1.0.0.0
+  /nix/store/l7g6f9facx5k0sdfwiqzaqd9s9y5jqsg-haskell-ide-engine-ghc863-1.0.0.0
+  /nix/store/0z54skjwfd5malhf9d3m83ksx6wq5kvb-haskell-ide-engine-ghc864-1.0.0.0
+  /nix/store/k8i38lkf56y0zj423g96132b2c2md9dr-haskell-ide-engine-ghc865-1.0.0.0
+
   # 0.14.0.0
   ## x86_64-linux
   /nix/store/fv5g10aimim5dpiczm2lfihaag02vhxl-haskell-ide-engine-ghc842-0.14.0.0
