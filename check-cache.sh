@@ -140,11 +140,28 @@ storepaths=(
   /nix/store/5lwkwpgd9mdbrj2k267kjjslc5jmp2f4-haskell-ide-engine-ghc864-0.9.0.0
 )
 
+misslog=$(mktemp)
+
 for path in ${storepaths[*]}; do
   url=$(sed -r <<< $path \
     -e 's|-.*|.narinfo|' \
     -e 's|/nix/store|https://all-hies.cachix.org|')
-  curl -s -o /dev/null -w "$path -> %{http_code}\n" "$url" &
+  {
+    code=$(curl -s -o /dev/null -w "%{http_code}\n" "$url")
+    case "$code" in
+      200)
+        echo "HIT $path"
+        ;;
+      *)
+        echo -e "\e[01;31mMISS($code)\e[0m $path"
+        echo "" > $misslog
+        ;;
+    esac
+  } &
 done
 
 wait
+
+misses=$(wc -l < "$misslog")
+rm "$misslog"
+exit "$misses"
