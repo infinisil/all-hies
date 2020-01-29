@@ -189,6 +189,8 @@ let
 in mkSet allVersions.stable
 // lib.mapAttrs (_: mkSet) (builtins.removeAttrs allVersions ["stable"])
 // {
+  bios = throw "all-hies: All versions now have hie-bios support, no need to use the bios attribute anymore";
+
   # Stable, but fall back to unstable if stable doesn't have a certain GHC
   # version
   unstableFallback = mkSet (allVersions.unstable // allVersions.stable);
