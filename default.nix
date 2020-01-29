@@ -107,7 +107,11 @@ let
       pkgs = forGhc.pkgs;
     };
 
-    build = (expr.override overrideFun).haskell-ide-engine;
+    hpkgs = expr.override overrideFun;
+    build = hpkgs.haskell-ide-engine // {
+      inherit (hpkgs) hie-bios;
+    };
+
   in build;
 
   # A set of all ghc versions for all hie versions, like
@@ -132,7 +136,7 @@ let
   # - hie: Same as hie-wrapper, provided for easy editor integration
   combined = versions: pkgs.buildEnv {
     name = "haskell-ide-engine-combined";
-    paths = lib.attrValues versions;
+    paths = lib.attrValues versions ++ [ (lib.last (lib.attrValues versions)).hie-bios ];
     buildInputs = [ pkgs.makeWrapper ];
     pathsToLink = [ "/bin" ];
     extraPrefix = "/libexec";
@@ -142,6 +146,7 @@ let
       rm $out/libexec/bin/{hie,hie-wrapper}
       mkdir -p $out/bin
       mv $out/libexec/bin/.hie-wrapper-wrapped $out/bin/hie-wrapper
+      mv $out/libexec/bin/hie-bios $out/bin/hie-bios
 
       # Now /libexec/bin only contains binaries hie-*.*.*. Link all of them to
       # $out/bin such that users installing this directly can access these
