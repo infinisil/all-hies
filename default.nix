@@ -38,6 +38,8 @@ let
       inherit sha256;
     }) { config = {}; overlays = []; };
 
+    cabal-install = pkgs.haskell.packages.${ghcVersion}.cabal-install;
+
     # Returns a Haskell overlay that sets all ghc base libraries to null
     # (minus a select few)
     baseLibraryNuller = self: super: let
@@ -81,6 +83,10 @@ let
         # Make sure hie-x.x.x binary exists
         # And make sure hie-wrapper finds this version
         postInstall = old.postInstall or "" + ''
+          # Add fallbacks for ghc and cabal such that HIE works with standalone files
+          wrapProgram $out/bin/hie \
+            --suffix PATH : ${lib.makeBinPath [ self.ghc forGhc.cabal-install ]}
+
           ln -s hie $out/bin/hie-${forGhc.versionString}
           wrapProgram $out/bin/hie-wrapper \
             --suffix PATH : $out/bin
