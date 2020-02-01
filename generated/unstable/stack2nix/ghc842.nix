@@ -12362,8 +12362,8 @@ inherit (pkgs) libfreenect;};
            pname = "functor-classes-compat";
            version = "1";
            sha256 = "ef11f94f44a74d6657ee61dcd2cfbc6d0889d233a2fb4caae6a29d9c59a1366f";
-           revision = "5";
-           editedCabalFile = "0n823v0avzdwvmfm5fgw5gsmrlvd12pdx1clkislpd5yq4ffgjw7";
+           revision = "6";
+           editedCabalFile = "0r0h3hp182w9ndhr5lrvhzl1vyj2f3vvh32fpdnbxb8xkkhx55sa";
            configureFlags = [ "-fcontainers" ];
            libraryHaskellDepends = [
              base containers hashable unordered-containers vector
@@ -14496,8 +14496,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "1.0.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1680mq7vr18llwk0rssj4b568gi200ywk8052q54mfhifasyb1j1";
-             rev = "970637fa13ef29ccc3c0a977248fcea83bdd11d7";
+             sha256 = "1z2i84lmlfls8f8hsyhvlalh0v7h9086vz3fqv3qj4nc692p6rc9";
+             rev = "259a1c4c651b14015476d481346ac951f5c8fcc1";
              fetchSubmodules = true;
            };
            configureFlags = [ "-fpedantic" ];
@@ -15221,8 +15221,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "1.0.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1680mq7vr18llwk0rssj4b568gi200ywk8052q54mfhifasyb1j1";
-             rev = "970637fa13ef29ccc3c0a977248fcea83bdd11d7";
+             sha256 = "1z2i84lmlfls8f8hsyhvlalh0v7h9086vz3fqv3qj4nc692p6rc9";
+             rev = "259a1c4c651b14015476d481346ac951f5c8fcc1";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/hie-plugin-api; echo source root reset to $sourceRoot";

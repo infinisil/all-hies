@@ -3918,8 +3918,8 @@ inherit (pkgs.xorg) libXinerama; inherit (pkgs.xorg) libXrender;};
            pname = "binary-orphans";
            version = "1.0.1";
            sha256 = "431ad40b8d812bada186c68935c0a69aa2904ca3bc57d957e1b0fb7d73b1753d";
-           revision = "2";
-           editedCabalFile = "0b4fafgwhrp4i7vxcynzk5678kn6jvraanmbmf14mxlkipl2fff3";
+           revision = "3";
+           editedCabalFile = "1s3bk63x2rxwk611jbvpvvgrq1k7k0gd9q105cqxcbcih396ac0s";
            libraryHaskellDepends = [ base binary transformers ];
            doHaddock = false;
            doCheck = false;
@@ -7190,6 +7190,8 @@ inherit (pkgs.xorg) libXfixes;};
            pname = "config-ini";
            version = "0.2.4.0";
            sha256 = "6e5194e8acb7d189f0904852138990d03b64f86b9fde8f591ee1341d5627d535";
+           revision = "1";
+           editedCabalFile = "15ryq15851m9hzljamw5spr6hzr6picgf6s3xzkn7nviidcq78mz";
            libraryHaskellDepends = [
              base containers megaparsec text transformers unordered-containers
            ];
@@ -12807,8 +12809,8 @@ inherit (pkgs) libfreenect;};
            pname = "functor-classes-compat";
            version = "1";
            sha256 = "ef11f94f44a74d6657ee61dcd2cfbc6d0889d233a2fb4caae6a29d9c59a1366f";
-           revision = "5";
-           editedCabalFile = "0n823v0avzdwvmfm5fgw5gsmrlvd12pdx1clkislpd5yq4ffgjw7";
+           revision = "6";
+           editedCabalFile = "0r0h3hp182w9ndhr5lrvhzl1vyj2f3vvh32fpdnbxb8xkkhx55sa";
            configureFlags = [ "-fcontainers" ];
            libraryHaskellDepends = [
              base containers hashable unordered-containers vector
@@ -15300,8 +15302,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "1.0.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1680mq7vr18llwk0rssj4b568gi200ywk8052q54mfhifasyb1j1";
-             rev = "970637fa13ef29ccc3c0a977248fcea83bdd11d7";
+             sha256 = "1z2i84lmlfls8f8hsyhvlalh0v7h9086vz3fqv3qj4nc692p6rc9";
+             rev = "259a1c4c651b14015476d481346ac951f5c8fcc1";
              fetchSubmodules = true;
            };
            configureFlags = [ "-fpedantic" ];
@@ -16090,8 +16092,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            version = "1.0.0.0";
            src = fetchgit {
              url = "https://github.com/haskell/haskell-ide-engine";
-             sha256 = "1680mq7vr18llwk0rssj4b568gi200ywk8052q54mfhifasyb1j1";
-             rev = "970637fa13ef29ccc3c0a977248fcea83bdd11d7";
+             sha256 = "1z2i84lmlfls8f8hsyhvlalh0v7h9086vz3fqv3qj4nc692p6rc9";
+             rev = "259a1c4c651b14015476d481346ac951f5c8fcc1";
              fetchSubmodules = true;
            };
            postUnpack = "sourceRoot+=/hie-plugin-api; echo source root reset to $sourceRoot";
@@ -34141,6 +34143,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "splitmix";
            version = "0.0.3";
            sha256 = "fce462557f490c6c3d264ca70ef98a2c644ba341a71e6ee9f87ee7f3e7ab0acc";
+           revision = "1";
+           editedCabalFile = "178d81ksnmgppbd09ci53r88iyacn3phy55v5i4ybfz5d8rfjpa5";
            libraryHaskellDepends = [ base deepseq random time ];
            doHaddock = false;
            doCheck = false;
@@ -37111,8 +37115,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "time-compat";
            version = "1.9.2.2";
            sha256 = "a268613385d359274edf48fb2dad4af29874f58486b2d5625e3b95a371066a17";
-           revision = "1";
-           editedCabalFile = "0k8ph4sydaiqp8dav4if6hpiaq8h1xsr93khmdr7a1mmfwdxr64r";
+           revision = "2";
+           editedCabalFile = "1i94pch4zj713gxcrlb09airbh3hqqs7cscjjfkxk9lixkk6iwnc";
            libraryHaskellDepends = [ base base-orphans deepseq time ];
            doHaddock = false;
            doCheck = false;
@@ -37780,8 +37784,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "tree-diff";
            version = "0.1";
            sha256 = "e3d901ad6f3e2732f07e0dafcafb27bef2f2cadec46bf9c9a5c95e60f1b2a684";
-           revision = "1";
-           editedCabalFile = "1nxwbn3z4a2102r45yhk0i6vb8fyc5mb894daai7l3l16rjzkp5a";
+           revision = "2";
+           editedCabalFile = "081fcdkps3sc1pcfbcxs5f1ifnpx8hsk9ms2gafd793lia6whfsk";
            libraryHaskellDepends = [
              aeson ansi-terminal ansi-wl-pprint base base-compat bytestring
              bytestring-builder containers hashable parsec parsers pretty
