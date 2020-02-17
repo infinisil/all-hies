@@ -174,7 +174,7 @@ for path in ${storepaths[*]}; do
         ;;
       *)
         echo -e "\e[01;31mMISS($code)\e[0m $path"
-        echo "" > $misslog
+        echo "" >> $misslog
         ;;
     esac
   } &
