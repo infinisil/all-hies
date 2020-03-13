@@ -97,10 +97,6 @@ in {
   nix-env -iA unstable.selection --arg selector 'p: { inherit (p) ghc844 ghc865; }' -f https://github.com/infinisil/all-hies/tarball/master
 #+END_SRC
 
-*** hie-bios versions
-
-There is a [[https://github.com/haskell/haskell-ide-engine/pull/1126][HIE PR]] for using @mpickering's [[https://github.com/mpickering/hie-bios][hie-bios]]. This PR can be built with by using the ~bios~ attribute, e.g. ~all-hies.bios.selection { selector  p: { inherit (p) ghc865; }; }~. Note that no caches are provided for these versions.
-
 ** Updating this repository
 
 This section is only for all-hies developers and not intended for end users.
