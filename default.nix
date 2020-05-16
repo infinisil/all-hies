@@ -24,6 +24,7 @@ let
         ghc = pkgs.haskell-nix.compiler."ghc${tightVersion}";
         modules = [{
           reinstallableLibGhc = true;
+          doHaddock = false;
         }];
       } // lib.optionalAttrs (builtins.pathExists generatedDir) {
         stack-sha256 = lib.fileContents hashFile;
