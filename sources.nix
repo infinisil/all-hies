@@ -1,19 +1,7 @@
 let
-  bootPkgs = import <nixpkgs> {};
-  # TODO: Remove impurity when PR merged or addressed
-  haskellNixSrc = bootPkgs.srcOnly {
-    name = "haskell.nix-patched";
-    src = fetchTarball {
-      url = "https://github.com/input-output-hk/haskell.nix/tarball/f330b2407ea303e894e7ea208935faf234b8d753";
-      sha256 = "0yymbii6lsm2skj6xq79gznhm4z2fy4hvl6nbffswxadlmnvj6s7";
-    };
-    patches = [
-      (bootPkgs.fetchpatch {
-        # https://github.com/input-output-hk/haskell.nix/pull/606
-        url = "https://github.com/input-output-hk/haskell.nix/commit/8293b6d130366eab96b26993470a19b85a86d030.patch";
-        sha256 = "0zd500zyd90iwrh20vrslzxxlka8z73g1dyw8a44axp8r6if7d28";
-      })
-    ];
+  haskellNixSrc = fetchTarball {
+    url = "https://github.com/input-output-hk/haskell.nix/tarball/af5998fe8d6b201d2a9be09993f1b9fae74e0082";
+    sha256 = "0z5w99wkkpg2disvwjnsyp45w0bhdkrhvnrpz5nbwhhp21c71mbn";
   };
   haskellNix = import haskellNixSrc {};
 
