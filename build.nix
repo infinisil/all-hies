@@ -28,6 +28,7 @@ let
           doHaddock = false;
           packages.ghc.flags.ghci = true;
           packages.ghci.flags.ghci = true;
+          packages.haskell-ide-engine.configureFlags = [ "--enable-executable-dynamic" ];
         }];
       } // lib.optionalAttrs (builtins.pathExists generatedDir) {
         stack-sha256 = lib.fileContents hashFile;
