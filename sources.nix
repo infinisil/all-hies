@@ -7,10 +7,12 @@ let
 
   pkgs = import haskellNix.sources.nixpkgs-2003 haskellNix.nixpkgsArgs;
 
+  hieVersion = "1.4";
+
   hieSrc = pkgs.srcOnly {
     name = "haskell-ide-engine-patched";
-    src = fetchTarball {
-      url = "https://github.com/haskell/haskell-ide-engine/tarball/1.4";
+    src = pkgs.fetchzip {
+      url = "https://github.com/haskell/haskell-ide-engine/tarball/${hieVersion}";
       sha256 = "15i01h6c5j2dvdyfajbcby0q0mjaiqb9q2kg9wfjzzjm50khb7rg";
     };
     patches = [
@@ -21,6 +23,7 @@ let
       })
     ];
   };
+
 in {
-  inherit pkgs hieSrc;
+  inherit pkgs hieSrc hieVersion;
 }
