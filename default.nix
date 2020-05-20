@@ -92,6 +92,7 @@ in rec {
   versions = lib.mapAttrs (name: single) builds;
   selection = { selector }: combined (selector builds);
   latest = lib.last (lib.attrValues versions);
+  compiler = lib.mapAttrs (name: build: build.haskellSet.pkg-set.config.ghc) builds;
 
   unstable = throw "all-hies: Unstable versions are currently not supported";
   unstableFallback = throw "all-hies: Unstable fallback versions are currently not supported";

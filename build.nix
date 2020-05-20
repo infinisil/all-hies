@@ -26,6 +26,8 @@ let
         modules = [{
           reinstallableLibGhc = true;
           doHaddock = false;
+          packages.ghc.flags.ghci = true;
+          packages.ghci.flags.ghci = true;
         }];
       } // lib.optionalAttrs (builtins.pathExists generatedDir) {
         stack-sha256 = lib.fileContents hashFile;
