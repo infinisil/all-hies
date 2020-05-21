@@ -12,7 +12,7 @@ let
   hieSrc = pkgs.srcOnly {
     name = "haskell-ide-engine-patched";
     src = pkgs.fetchzip {
-      url = "https://github.com/haskell/haskell-ide-engine/tarball/${hieVersion}";
+      url = "https://github.com/haskell/haskell-ide-engine/archive/${hieVersion}.tar.gz";
       sha256 = "15i01h6c5j2dvdyfajbcby0q0mjaiqb9q2kg9wfjzzjm50khb7rg";
     };
     patches = [
