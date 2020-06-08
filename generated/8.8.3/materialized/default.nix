@@ -3,6 +3,8 @@
     {
       packages = {
         "apply-refact" = (((hackage.apply-refact)."0.7.0.0").revisions).default;
+        "Cabal" = (((hackage.Cabal)."3.0.2.0").revisions).default;
+        "cabal-helper" = (((hackage.cabal-helper)."1.1.0.0").revisions).default;
         "clock" = (((hackage.clock)."0.7.2").revisions).default;
         "constrained-dynamic" = (((hackage.constrained-dynamic)."0.1.0.0").revisions).default;
         "floskell" = (((hackage.floskell)."0.10.2").revisions).default;
@@ -16,10 +18,10 @@
         "semigroups" = (((hackage.semigroups)."0.18.5").revisions).default;
         "temporary" = (((hackage.temporary)."1.2.1.1").revisions).default;
         "unliftio-core" = (((hackage.unliftio-core)."0.2.0.1").revisions).default;
+        "hie-bios" = (((hackage.hie-bios)."0.5.0").revisions).default;
         "bytestring-trie" = (((hackage.bytestring-trie)."0.2.5.0").revisions).r1;
         haskell-ide-engine = ./haskell-ide-engine.nix;
         hie-plugin-api = ./hie-plugin-api.nix;
-        cabal-helper = ./.stack-to-nix.cache.0;
         };
       };
   resolver = "lts-15.10";

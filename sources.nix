@@ -7,21 +7,12 @@ let
 
   pkgs = import haskellNix.sources.nixpkgs-2003 haskellNix.nixpkgsArgs;
 
-  hieVersion = "1.4";
+  # unstable-2020-05-23
+  hieVersion = "fe630a1e31232013549518909e511924e19af4af";
 
-  hieSrc = pkgs.srcOnly {
-    name = "haskell-ide-engine-patched";
-    src = pkgs.fetchzip {
-      url = "https://github.com/haskell/haskell-ide-engine/archive/${hieVersion}.tar.gz";
-      sha256 = "15i01h6c5j2dvdyfajbcby0q0mjaiqb9q2kg9wfjzzjm50khb7rg";
-    };
-    patches = [
-      (pkgs.fetchpatch {
-        # https://github.com/haskell/haskell-ide-engine/pull/1770 for 1.4
-        url = "https://github.com/haskell/haskell-ide-engine/commit/495d6cf513e090a8c5a40b95890440c8322d5d0c.patch";
-        sha256 = "16hrsgf43k91zh5fc52hx8yvi1qcvkknhmcz3vvz0p8fx5sfdwyc";
-      })
-    ];
+  hieSrc = fetchTarball {
+    url = "https://github.com/haskell/haskell-ide-engine/archive/${hieVersion}.tar.gz";
+    sha256 = "1lbbzk9kj39h79wb8imv5s22y592cyyrk06y24glrcxh5bzghb9l";
   };
 
 in {

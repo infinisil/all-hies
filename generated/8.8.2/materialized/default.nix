@@ -5,6 +5,8 @@
         "apply-refact" = (((hackage.apply-refact)."0.7.0.0").revisions).default;
         "brittany" = (((hackage.brittany)."0.12.1.1").revisions).default;
         "bytestring-trie" = (((hackage.bytestring-trie)."0.2.5.0").revisions).default;
+        "Cabal" = (((hackage.Cabal)."3.0.2.0").revisions).default;
+        "cabal-helper" = (((hackage.cabal-helper)."1.1.0.0").revisions).default;
         "clock" = (((hackage.clock)."0.7.2").revisions).default;
         "constrained-dynamic" = (((hackage.constrained-dynamic)."0.1.0.0").revisions).default;
         "floskell" = (((hackage.floskell)."0.10.2").revisions).default;
@@ -15,7 +17,7 @@
         "haskell-lsp" = (((hackage.haskell-lsp)."0.20.0.0").revisions).default;
         "haskell-lsp-types" = (((hackage.haskell-lsp-types)."0.20.0.0").revisions).default;
         "lsp-test" = (((hackage.lsp-test)."0.10.1.0").revisions).default;
-        "hie-bios" = (((hackage.hie-bios)."0.4.0").revisions).default;
+        "hie-bios" = (((hackage.hie-bios)."0.5.0").revisions).default;
         "hlint" = (((hackage.hlint)."2.2.11").revisions).default;
         "hoogle" = (((hackage.hoogle)."5.0.17.15").revisions).default;
         "ilist" = (((hackage.ilist)."0.3.1.0").revisions).default;
@@ -26,10 +28,9 @@
         "temporary" = (((hackage.temporary)."1.2.1.1").revisions).default;
         "unliftio" = (((hackage.unliftio)."0.2.12.1").revisions).default;
         "unliftio-core" = (((hackage.unliftio-core)."0.2.0.1").revisions).default;
-        "hsimport" = (((hackage.hsimport)."0.11.0").revisions)."e8f1774aff97215d7cc3a6c81635fae75b80af182f732f8fe28d1ed6eb9c7401";
+        "hsimport" = (((hackage.hsimport)."0.11.0").revisions).r2;
         haskell-ide-engine = ./haskell-ide-engine.nix;
         hie-plugin-api = ./hie-plugin-api.nix;
-        cabal-helper = ./.stack-to-nix.cache.0;
         };
       };
   resolver = "lts-15.3";
