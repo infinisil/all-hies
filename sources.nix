@@ -5,16 +5,22 @@ let
   };
   haskellNix = import haskellNixSrc {};
 
-  pkgs = import haskellNix.sources.nixpkgs-2003 haskellNix.nixpkgsArgs;
+  glibcSpecificPkgs = {
+    "glibc-2.30" = import haskellNix.sources.nixpkgs-2003 haskellNix.nixpkgsArgs;
+    "glibc-2.27" = import haskellNix.sources.nixpkgs-1909 haskellNix.nixpkgsArgs;
+  };
 
-  # unstable-2020-05-23
-  hieVersion = "fe630a1e31232013549518909e511924e19af4af";
+  pkgs = glibcSpecificPkgs."glibc-2.30";
 
-  hieSrc = fetchTarball {
-    url = "https://github.com/haskell/haskell-ide-engine/archive/${hieVersion}.tar.gz";
-    sha256 = "1lbbzk9kj39h79wb8imv5s22y592cyyrk06y24glrcxh5bzghb9l";
+  hie = rec {
+    # unstable-2020-05-23
+    version = "fe630a1e31232013549518909e511924e19af4af";
+    src = fetchTarball {
+      url = "https://github.com/haskell/haskell-ide-engine/archive/${version}.tar.gz";
+      sha256 = "1lbbzk9kj39h79wb8imv5s22y592cyyrk06y24glrcxh5bzghb9l";
+    };
   };
 
 in {
-  inherit pkgs hieSrc hieVersion;
+  inherit glibcSpecificPkgs pkgs hie;
 }
