@@ -3,7 +3,6 @@
   inherit (sources) pkgs;
   inherit (pkgs) lib;
 in import ./build.nix {
-  pinned = true;
   glibcName = "glibc-${glibcVersion}";
   inherit sources ghcVersion;
 }
