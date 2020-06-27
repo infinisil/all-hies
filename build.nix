@@ -39,12 +39,14 @@ let
       haskellSet = pkgs.haskell-nix.stackProject materializedStackArgs;
       inherit (haskellSet.haskell-ide-engine.components.exes) hie;
       inherit (haskellSet.hie-bios.components.exes) hie-bios;
-    in pkgs.buildEnv {
+    in (pkgs.buildEnv {
       name = "haskell-ide-engine-${version.dotVersion}-${sources.hie.version}";
       paths = [ hie hie-bios ];
       pathsToLink = [ "/bin" ];
       inherit (hie) meta;
-    };
+    }).overrideAttrs (old: {
+      allowSubstitutes = true;
+    });
 
   materialize =
     let
