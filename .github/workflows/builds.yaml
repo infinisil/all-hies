@@ -1,4 +1,4 @@
-name: HIE Build
+name: CI
 on: 
   push:
     branches:
@@ -6,8 +6,16 @@ on:
   pull_request:
 jobs:
   build:
-    name: ${{ matrix.os }}, GHC ${{ matrix.ghc }}, glibc ${{ matrix.glibc }}
+    name: HIE Build for ${{ matrix.os }}, GHC ${{ matrix.ghc }}, glibc ${{ matrix.glibc }}
     runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        #os: [ ubuntu-latest, macos-latest ]
+        #ghc: [ "8.6.5", "8.8.3" ]
+        #glibc: [ "2.27", "2.30" ]
+        os: [ ubuntu-latest ]
+        ghc: [ "8.8.3" ]
+        glibc: [ "2.30" ]
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v10
@@ -31,11 +39,69 @@ jobs:
     - name: Build HIE
       run: |
         nix-build ci.nix -A combined --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }}
+
+  template-haskell.nix:
+    name: Haskell.nix template for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build
     strategy:
       matrix:
         #os: [ ubuntu-latest, macos-latest ]
-        #ghc: [ "8.6.5", "8.8.3" ]
-        #glibc: [ "2.27", "2.30" ]
         os: [ ubuntu-latest ]
-        ghc: [ "8.8.3" ]
-        glibc: [ "2.30" ]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v10
+    - uses: cachix/cachix-action@v6
+      with:
+        name: all-hies
+        extraPullNames: iohk
+    - name: Entering nix-shell
+      run: |
+        cd templates/haskell.nix
+        nix-shell --run "echo Successfully entered nix-shell"
+    - name: Call HIE
+      run: |
+        nix-shell --run "hie"
+    - name: Search hoogle
+      run: |
+        nix-shell --run "hoogle fromMaybe" | grep Data.Maybe
+    - name: Build and run with cabal
+      run: |
+        nix-shell --run "cabal run"
+    - name: Build and run with Nix
+      run: |
+        nix-build
+        ./result/bin/all-hies-template
+
+  template-nixpkgs-infra:
+    name: Nixpkgs infra template for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      matrix:
+        #os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu-latest ]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v10
+    - uses: cachix/cachix-action@v6
+      with:
+        name: all-hies
+        extraPullNames: iohk
+    - name: Entering nix-shell
+      run: |
+        cd templates/nixpkgs-infra
+        nix-shell --run "echo Successfully entered nix-shell"
+    - name: Call HIE
+      run: |
+        nix-shell --run "hie"
+    - name: Search hoogle
+      run: |
+        nix-shell --run "hoogle fromMaybe" | grep Data.Maybe
+    - name: Build and run with cabal
+      run: |
+        nix-shell --run "cabal run"
+    - name: Build and run with Nix
+      run: |
+        nix-build
+        ./result/bin/all-hies-template
