@@ -51,7 +51,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v10
-    - uses: cachix/cachix-action@v6
+    - uses: cachix/cachix-action@09c0620ab018415cbf1e6792e1f415cf892879b5
       with:
         name: all-hies
         extraPullNames: iohk
@@ -84,7 +84,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v10
-    - uses: cachix/cachix-action@v6
+    - uses: cachix/cachix-action@09c0620ab018415cbf1e6792e1f415cf892879b5
       with:
         name: all-hies
         extraPullNames: iohk
