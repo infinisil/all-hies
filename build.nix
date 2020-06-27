@@ -1,5 +1,8 @@
-{ pkgs, sources, ghcVersion }:
+# If pinned is true, need to provide args.glibcName
+# If pinned is false, need to provide args.pkgs
+{ pinned, sources, ghcVersion, ... }@args:
 let
+  pkgs = if pinned then sources.glibcSpecificPkgs.${args.glibcName} else args.pkgs;
   inherit (pkgs) lib;
 
   versionList = builtins.match "([0-9]+)\\.([0-9]+)\\.([0-9]+)" ghcVersion;
@@ -29,7 +32,7 @@ let
   hashFile = generatedDir + "/stack-sha256";
   materializedDir = generatedDir + "/materialized";
 
-  materializedStackArgs = stackArgs // lib.optionalAttrs (builtins.pathExists generatedDir) {
+  materializedStackArgs = stackArgs // lib.optionalAttrs (pinned && builtins.pathExists generatedDir) {
     stack-sha256 = lib.fileContents hashFile;
     materialized = materializedDir;
   };

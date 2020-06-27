@@ -92,7 +92,6 @@ jobs:
     - uses: cachix/cachix-action@09c0620ab018415cbf1e6792e1f415cf892879b5
       with:
         name: all-hies
-        extraPullNames: iohk
     - name: Entering nix-shell
       run: |
         nix-shell --run "echo Successfully entered nix-shell"
