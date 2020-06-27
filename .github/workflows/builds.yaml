@@ -40,7 +40,7 @@ jobs:
       run: |
         nix-build ci.nix -A combined --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }}
 
-  template-haskell.nix:
+  template_haskell-nix:
     name: Haskell.nix template for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     needs: build
@@ -73,7 +73,7 @@ jobs:
         nix-build
         ./result/bin/all-hies-template
 
-  template-nixpkgs-infra:
+  template_nixpkgs-infra:
     name: Nixpkgs infra template for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     needs: build
