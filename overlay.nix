@@ -11,5 +11,14 @@ in final: prev: {
     }).combined;
   };
 
-  # TODO: nixpkgs infra overlay
+  haskell = prev.haskell // {
+    packageOverrides = final.lib.composeExtensions prev.haskell.packageOverrides
+      (hfinal: hprev: {
+        hie = (build {
+          pkgs = sources.glibcSpecificPkgs.${final.glibc.name};
+          inherit sources;
+          ghcVersion = hfinal.ghc.version;
+        }).combined;
+      });
+  };
 }
