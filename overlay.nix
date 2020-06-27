@@ -8,7 +8,6 @@ in final: prev: {
       pkgs = sources.glibcSpecificPkgs.${final.glibc.name};
       inherit sources;
       ghcVersion = args.ghc.version;
-      materialize = true;
     }).combined;
   };
 

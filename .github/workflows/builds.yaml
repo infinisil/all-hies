@@ -1,0 +1,41 @@
+name: HIE Build
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+  build:
+    name: ${{ matrix.os }}, GHC ${{ matrix.ghc }}, glibc ${{ matrix.glibc }}
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v10
+    - uses: cachix/cachix-action@09c0620ab018415cbf1e6792e1f415cf892879b5
+      with:
+        name: all-hies
+        extraPullNames: iohk
+        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - name: Make sure materializations are up-to-date
+      run: |
+        nix-build ci.nix -A materialize --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }}
+        ./result
+        # Fails if there are any changes
+        if ! [[ -z "$(git status --porcelain)" ]]; then
+          echo "The materialization script made some changes:" >&2
+          git status
+          echo "Run \$(nix-build ci.nix -A materializeScript) to apply them" >&2
+          exit 1
+        fi
+        echo "Materialization files up-to-date" >&2
+    - name: Build HIE
+      run: |
+        nix-build ci.nix -A combined --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }}
+    strategy:
+      matrix:
+        #os: [ ubuntu-latest, macos-latest ]
+        #ghc: [ "8.6.5", "8.8.3" ]
+        #glibc: [ "2.27", "2.30" ]
+        os: [ ubuntu-latest ]
+        ghc: [ "8.8.3" ]
+        glibc: [ "2.30" ]

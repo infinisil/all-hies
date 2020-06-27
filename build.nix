@@ -1,4 +1,4 @@
-{ pkgs, sources, ghcVersion, materialize }:
+{ pkgs, sources, ghcVersion }:
 let
   inherit (pkgs) lib;
 
@@ -11,14 +11,10 @@ let
     tightVersion = "${major}${minor}${patch}";
   };
 
-  generatedDir = ./generated + "/${version.dotVersion}";
-  hashFile = generatedDir + "/stack-sha256";
-  materializedDir = generatedDir + "/materialized";
-
-  haskellSet = pkgs.haskell-nix.stackProject' ({
+  stackArgs = {
     src = sources.hie.src;
     stackYaml = "stack-${version.dotVersion}.yaml";
-    ghc = pkgs.haskell-nix.compiler."ghc${version.tightVersion}";
+    ghc = pkgs.haskell-nix.compiler."ghc${version.tightVersion}" or (throw "all-hies: My haskell.nix version doesn't support GHC ${version.dotVersion} yet");
     # TODO: Remove GHC from closure
     modules = [{
       reinstallableLibGhc = true;
@@ -27,27 +23,39 @@ let
       packages.ghci.flags.ghci = true;
       packages.haskell-ide-engine.configureFlags = [ "--enable-executable-dynamic" ];
     }];
-  } // lib.optionalAttrs (materialize && builtins.pathExists generatedDir) {
+  };
+
+  generatedDir = ./generated + "/${version.dotVersion}";
+  hashFile = generatedDir + "/stack-sha256";
+  materializedDir = generatedDir + "/materialized";
+
+  materializedStackArgs = stackArgs // lib.optionalAttrs (builtins.pathExists generatedDir) {
     stack-sha256 = lib.fileContents hashFile;
     materialized = materializedDir;
-  });
-
-  materializeScript = pkgs.writeShellScript "materialize-${version.dotVersion}" ''
-    set -x
-    mkdir -p ${toString generatedDir}
-    nix-hash --base32 --type sha256 ${haskellSet.stack-nix} > ${toString hashFile}
-    cp -r --no-preserve=mode ${haskellSet.stack-nix} ${toString materializedDir}
-  '';
-
-  inherit (haskellSet.hsPkgs.haskell-ide-engine.components.exes) hie;
-  inherit (haskellSet.hsPkgs.hie-bios.components.exes) hie-bios;
-
-  combined = pkgs.buildEnv {
-    name = "haskell-ide-engine-${version.dotVersion}-${sources.hie.version}";
-    paths = [ hie hie-bios ];
-    pathsToLink = [ "/bin" ];
-    inherit (hie) meta;
   };
+
+  combined =
+    let
+      haskellSet = pkgs.haskell-nix.stackProject materializedStackArgs;
+      inherit (haskellSet.haskell-ide-engine.components.exes) hie;
+      inherit (haskellSet.hie-bios.components.exes) hie-bios;
+    in pkgs.buildEnv {
+      name = "haskell-ide-engine-${version.dotVersion}-${sources.hie.version}";
+      paths = [ hie hie-bios ];
+      pathsToLink = [ "/bin" ];
+      inherit (hie) meta;
+    };
+
+  materialize =
+    let
+      haskellSet = pkgs.haskell-nix.stackProject stackArgs;
+    in pkgs.writeShellScript "materialize-${version.dotVersion}" ''
+      set -x
+      mkdir -p ${toString generatedDir}
+      nix-hash --base32 --type sha256 ${haskellSet.stack-nix} > ${toString hashFile}
+      cp -r --no-preserve=mode -T ${haskellSet.stack-nix} ${toString materializedDir}
+    '';
+
 in {
-  inherit combined materializeScript;
+  inherit combined materialize;
 }
