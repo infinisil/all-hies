@@ -48,6 +48,9 @@ jobs:
       matrix:
         #os: [ ubuntu-latest, macos-latest ]
         os: [ ubuntu-latest ]
+    defaults:
+      run:
+        working-directory: templates/haskell.nix
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v10
@@ -57,7 +60,6 @@ jobs:
         extraPullNames: iohk
     - name: Entering nix-shell
       run: |
-        cd templates/haskell.nix
         nix-shell --run "echo Successfully entered nix-shell"
     - name: Call HIE
       run: |
@@ -81,6 +83,9 @@ jobs:
       matrix:
         #os: [ ubuntu-latest, macos-latest ]
         os: [ ubuntu-latest ]
+    defaults:
+      run:
+        working-directory: templates/nixpkgs-infra
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v10
@@ -90,7 +95,6 @@ jobs:
         extraPullNames: iohk
     - name: Entering nix-shell
       run: |
-        cd templates/nixpkgs-infra
         nix-shell --run "echo Successfully entered nix-shell"
     - name: Call HIE
       run: |
