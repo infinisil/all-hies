@@ -60,7 +60,7 @@ jobs:
             ;;
           *)
             echo "Derivation not in cache, building it"
-            nix-store -r "$path"
+            nix-store -r "$drv"
             ;;
         esac
 
