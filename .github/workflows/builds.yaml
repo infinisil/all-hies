@@ -46,10 +46,16 @@ jobs:
         name: all-hies
         extraPullNames: iohk
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - name: Instantiate HIE
+      run: |
+        nix-instantiate ci.nix \
+          -A combined \
+          --argstr ghcVersion ${{ matrix.ghc }} \
+          --argstr glibcVersion ${{ matrix.glibc }} \
+          --add-root $PWD/drv --indirect
     - name: Build HIE
       run: |
-        drv=$(nix-instantiate ci.nix -A combined --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }})
-        path=$(nix-store --query --outputs "$drv")
+        path=$(nix-store --query --outputs drv)
         url=$(sed -E <<< "$path" \
           -e 's|-.*|.narinfo|' \
           -e 's|/nix/store|https://all-hies.cachix.org|')
@@ -62,7 +68,7 @@ jobs:
             echo "Derivation not in cache, building it"
             # Since we have a lot of derivations to build, do as many of them
             # in parallel, but all of them with a single core
-            nix-store --realise "$drv" --max-jobs auto --cores 1
+            nix-store --realise drv --max-jobs auto --cores 1
             ;;
         esac
 
