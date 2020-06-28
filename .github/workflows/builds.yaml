@@ -17,7 +17,7 @@ jobs:
     - uses: cachix/install-nix-action@v10
     - name: Make sure materializations are up-to-date
       run: |
-        materializationId=$(nix-instantiate --eval sources.nix -A materializationId | tr -d '"')
+        materializationId=$(nix-instantiate --read-write-mode --eval sources.nix -A materializationId | tr -d '"')
         if ! diff "$materializationId" "generated/${{ matrix.ghc }}/materialization-id"; then
           echo "The materialization files for ${{ matrix.ghc }} are outdated"
           echo "Run"
@@ -50,7 +50,7 @@ jobs:
       run: |
         drv=$(nix-instantiate ci.nix -A combined --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }})
         path=$(nix-store --query --outputs "$drv")
-        url=$(sed -r <<< "$path" \
+        url=$(sed -E <<< "$path" \
           -e 's|-.*|.narinfo|' \
           -e 's|/nix/store|https://all-hies.cachix.org|')
         code=$(curl -s -o /dev/null -w "%{http_code}\n" "$url")
