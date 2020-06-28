@@ -3,6 +3,6 @@
   inherit (sources) pkgs;
   inherit (pkgs) lib;
 in import ./build.nix {
-  pkgs = sources.glibcSpecificPkgs."glibc-${glibcVersion}";
+  glibcName = "glibc-${glibcVersion}";
   inherit sources ghcVersion;
 }

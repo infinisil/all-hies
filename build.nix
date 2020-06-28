@@ -1,5 +1,6 @@
-{ pkgs, sources, ghcVersion }:
+{ sources, ghcVersion, glibcName }:
 let
+  pkgs = sources.glibcSpecificPkgs.${glibcName};
   inherit (pkgs) lib;
 
   versionList = builtins.match "([0-9]+)\\.([0-9]+)\\.([0-9]+)" ghcVersion;
@@ -39,12 +40,14 @@ let
       haskellSet = pkgs.haskell-nix.stackProject materializedStackArgs;
       inherit (haskellSet.haskell-ide-engine.components.exes) hie;
       inherit (haskellSet.hie-bios.components.exes) hie-bios;
-    in pkgs.buildEnv {
+    in (pkgs.buildEnv {
       name = "haskell-ide-engine-${version.dotVersion}-${sources.hie.version}";
       paths = [ hie hie-bios ];
       pathsToLink = [ "/bin" ];
       inherit (hie) meta;
-    };
+    }).overrideAttrs (old: {
+      allowSubstitutes = true;
+    });
 
   materialize =
     let
@@ -53,7 +56,8 @@ let
       set -x
       mkdir -p ${toString generatedDir}
       nix-hash --base32 --type sha256 ${haskellSet.stack-nix} > ${toString hashFile}
-      cp -r --no-preserve=mode -T ${haskellSet.stack-nix} ${toString materializedDir}
+      ${pkgs.coreutils}/bin/cp -r --no-preserve=mode -T ${haskellSet.stack-nix} ${toString materializedDir}
+      cp ${sources.materializationId} ${toString generatedDir}/materialization-id
     '';
 
 in {

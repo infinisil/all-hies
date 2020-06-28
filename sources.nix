@@ -1,6 +1,7 @@
 let
+  haskellNixVersion = "af5998fe8d6b201d2a9be09993f1b9fae74e0082";
   haskellNixSrc = fetchTarball {
-    url = "https://github.com/input-output-hk/haskell.nix/tarball/af5998fe8d6b201d2a9be09993f1b9fae74e0082";
+    url = "https://github.com/input-output-hk/haskell.nix/tarball/${haskellNixVersion}";
     sha256 = "0z5w99wkkpg2disvwjnsyp45w0bhdkrhvnrpz5nbwhhp21c71mbn";
   };
   haskellNix = import haskellNixSrc {};
@@ -21,6 +22,14 @@ let
     };
   };
 
+  # String gets written to the generated directory, so CI can quickly know
+  # whether materialization files need to be updated
+  materializationId = builtins.toFile "materialization-id" ''
+    These materialization files were generated with
+    haskell.nix ${haskellNixVersion}
+    haskell-ide-engine ${hie.version}
+  '';
+
 in {
-  inherit glibcSpecificPkgs pkgs hie;
+  inherit glibcSpecificPkgs pkgs hie materializationId;
 }
