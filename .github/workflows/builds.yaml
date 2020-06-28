@@ -1,13 +1,49 @@
-name: HIE Build
+name: CI
 on: 
   push:
     branches:
       - master
   pull_request:
 jobs:
+  materialize-check:
+    name: Check materialization files for GHC ${{ matrix.ghc }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ghc: [ "8.6.5", "8.8.3" ]
+        glibc: [ "2.30" ]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v10
+    - name: Make sure materializations are up-to-date
+      run: |
+        materializationId=$(nix-instantiate --read-write-mode --eval sources.nix -A materializationId | tr -d '"')
+        if ! diff "$materializationId" "generated/${{ matrix.ghc }}/materialization-id"; then
+          echo "The materialization files for ${{ matrix.ghc }} are outdated"
+          echo "Run"
+          echo "  \$(nix-build ci.nix -A materialize --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }})"
+          echo "to update them"
+          exit 1
+        fi
+        echo "Materialization files up-to-date" >&2
+
   build:
-    name: ${{ matrix.os }}, GHC ${{ matrix.ghc }}, glibc ${{ matrix.glibc }}
+    name: HIE Build for ${{ matrix.os }}, GHC ${{ matrix.ghc }}, glibc ${{ matrix.glibc }}
     runs-on: ${{ matrix.os }}
+    needs: materialize-check
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        ghc: [ "8.6.5", "8.8.3" ]
+        glibc: [ "2.30" ]
+        include:
+          # Only linux needs matching glibc versions
+          - os: ubuntu-latest
+            ghc: "8.6.5"
+            glibc: "2.27"
+          - os: ubuntu-latest
+            ghc: "8.8.3"
+            glibc: "2.27"
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v10
@@ -16,26 +52,95 @@ jobs:
         name: all-hies
         extraPullNames: iohk
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-    - name: Make sure materializations are up-to-date
+    - name: Instantiate HIE
       run: |
-        nix-build ci.nix -A materialize --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }}
-        ./result
-        # Fails if there are any changes
-        if ! [[ -z "$(git status --porcelain)" ]]; then
-          echo "The materialization script made some changes:" >&2
-          git status
-          echo "Run \$(nix-build ci.nix -A materializeScript) to apply them" >&2
-          exit 1
-        fi
-        echo "Materialization files up-to-date" >&2
+        nix-instantiate ci.nix \
+          -A combined \
+          --argstr ghcVersion ${{ matrix.ghc }} \
+          --argstr glibcVersion ${{ matrix.glibc }} \
+          --add-root $PWD/drv --indirect
     - name: Build HIE
       run: |
-        nix-build ci.nix -A combined --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }}
+        path=$(nix-store --query --outputs drv)
+        url=$(sed -E <<< "$path" \
+          -e 's|-.*|.narinfo|' \
+          -e 's|/nix/store|https://all-hies.cachix.org|')
+        code=$(curl -s -o /dev/null -w "%{http_code}\n" "$url")
+        case "$code" in
+          200)
+            echo "Derivation already in cache, not building it"
+            ;;
+          *)
+            echo "Derivation not in cache, building it"
+            # Since we have a lot of derivations to build, do as many of them
+            # in parallel, but all of them with a single core
+            nix-store --realise drv --max-jobs auto --cores 1
+            ;;
+        esac
+
+  template_haskell-nix:
+    name: Haskell.nix template for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build
     strategy:
       matrix:
-        #os: [ ubuntu-latest, macos-latest ]
-        #ghc: [ "8.6.5", "8.8.3" ]
-        #glibc: [ "2.27", "2.30" ]
-        os: [ ubuntu-latest ]
-        ghc: [ "8.8.3" ]
-        glibc: [ "2.30" ]
+        os: [ ubuntu-latest, macos-latest ]
+    defaults:
+      run:
+        working-directory: templates/haskell.nix
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v10
+    - uses: cachix/cachix-action@09c0620ab018415cbf1e6792e1f415cf892879b5
+      with:
+        name: all-hies
+        extraPullNames: iohk
+    - name: Entering nix-shell
+      run: |
+        nix-shell --run "echo Successfully entered nix-shell"
+    - name: Call HIE
+      run: |
+        nix-shell --run "hie 2>&1 | tee /dev/stderr | grep 'Main.hs: OK'"
+    - name: Search hoogle
+      run: |
+        nix-shell --run "hoogle fromMaybe | grep Data.Maybe"
+    - name: Build and run with cabal
+      run: |
+        nix-shell --run "cabal run"
+    - name: Build and run with Nix
+      run: |
+        nix-build
+        ./result/bin/all-hies-template
+
+  template_nixpkgs-infra:
+    name: Nixpkgs infra template for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+    defaults:
+      run:
+        working-directory: templates/nixpkgs-infra
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v10
+    - uses: cachix/cachix-action@09c0620ab018415cbf1e6792e1f415cf892879b5
+      with:
+        name: all-hies
+    - name: Entering nix-shell
+      run: |
+        nix-shell --run "echo Successfully entered nix-shell"
+    - name: Call HIE
+      run: |
+        nix-shell --run "hie 2>&1 | tee /dev/stderr | grep 'Main.hs: OK'"
+    - name: Search hoogle
+      run: |
+        nix-shell --run "hoogle fromMaybe | grep Data.Maybe"
+    - name: Build and run with cabal
+      run: |
+        nix-shell --run "cabal run"
+    - name: Build and run with Nix
+      run: |
+        nix-build
+        ./result/bin/all-hies-template
