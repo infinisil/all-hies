@@ -7,7 +7,11 @@ in final: prev: {
     packageOverrides = final.lib.composeExtensions prev.haskell.packageOverrides
       (hfinal: hprev: {
         hie = (build {
-          glibcName = final.glibc.name;
+          glibcName =
+            if final.stdenv.hostPlatform.isDarwin
+            # glibc matching doesn't matter for darwin
+            then "2.30"
+            else final.glibc.name;
           inherit sources;
           ghcVersion = hfinal.ghc.version;
         }).combined;
@@ -21,7 +25,11 @@ in final: prev: {
   haskell-nix = prev.haskell-nix // {
     custom-tools = prev.haskell-nix.custom-tools // {
       hie.unstable = args: (build {
-        glibcName = final.glibc.name;
+        glibcName =
+          if final.stdenv.hostPlatform.isDarwin
+          # glibc matching doesn't matter for darwin
+          then "2.30"
+          else final.glibc.name;
         inherit sources;
         ghcVersion = args.ghc.version;
       }).combined;
