@@ -7,8 +7,8 @@ let
   haskellNix = import haskellNixSrc {};
 
   glibcSpecificPkgs = {
-    "glibc-2.30" = import haskellNix.sources.nixpkgs-2003 haskellNix.nixpkgsArgs;
-    "glibc-2.27" = import haskellNix.sources.nixpkgs-1909 haskellNix.nixpkgsArgs;
+    "glibc-2.27" = import haskellNix.sources.nixpkgs-2003 haskellNix.nixpkgsArgs;
+    "glibc-2.30" = import haskellNix.sources.nixpkgs-1909 haskellNix.nixpkgsArgs;
   };
 
   pkgs = glibcSpecificPkgs."glibc-2.30";
