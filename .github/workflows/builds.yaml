@@ -94,10 +94,10 @@ jobs:
         nix-shell --run "echo Successfully entered nix-shell"
     - name: Call HIE
       run: |
-        nix-shell --run "hie"
+        nix-shell --run "hie 2>&1 | tee /dev/stderr | grep 'Main.hs: OK'"
     - name: Search hoogle
       run: |
-        nix-shell --run "hoogle fromMaybe" | grep Data.Maybe
+        nix-shell --run "hoogle fromMaybe | grep Data.Maybe"
     - name: Build and run with cabal
       run: |
         nix-shell --run "cabal run"
@@ -127,10 +127,10 @@ jobs:
         nix-shell --run "echo Successfully entered nix-shell"
     - name: Call HIE
       run: |
-        nix-shell --run "hie"
+        nix-shell --run "hie 2>&1 | tee /dev/stderr | grep 'Main.hs: OK'"
     - name: Search hoogle
       run: |
-        nix-shell --run "hoogle fromMaybe" | grep Data.Maybe
+        nix-shell --run "hoogle fromMaybe | grep Data.Maybe"
     - name: Build and run with cabal
       run: |
         nix-shell --run "cabal run"
