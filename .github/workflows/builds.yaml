@@ -60,7 +60,9 @@ jobs:
             ;;
           *)
             echo "Derivation not in cache, building it"
-            nix-store -r "$drv"
+            # Since we have a lot of derivations to build, do as many of them
+            # in parallel, but all of them with a single core
+            nix-store --realise "$drv" --max-jobs auto --cores 1
             ;;
         esac
 
