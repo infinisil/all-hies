@@ -56,7 +56,7 @@ let
       set -x
       mkdir -p ${toString generatedDir}
       nix-hash --base32 --type sha256 ${haskellSet.stack-nix} > ${toString hashFile}
-      cp -r --no-preserve=mode -T ${haskellSet.stack-nix} ${toString materializedDir}
+      ${pkgs.coreutils}/bin/cp -r --no-preserve=mode -T ${haskellSet.stack-nix} ${toString materializedDir}
     '';
 
 in {
