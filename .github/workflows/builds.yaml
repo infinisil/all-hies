@@ -5,9 +5,32 @@ on:
       - master
   pull_request:
 jobs:
+  materialize-check:
+    name: Check materialization files for GHC ${{ matrix.ghc }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ghc: [ "8.6.5", "8.8.3" ]
+        glibc: [ "2.30" ]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v10
+    - name: Make sure materializations are up-to-date
+      run: |
+        materializationId=$(nix-instantiate --eval sources.nix -A materializationId | tr -d '"')
+        if ! diff "$materializationId" "generated/${{ matrix.ghc }}/materialization-id"; then
+          echo "The materialization files for ${{ matrix.ghc }} are outdated"
+          echo "Run"
+          echo "  \$(nix-build ci.nix -A materialize --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }})"
+          echo "to update them"
+          exit 1
+        fi
+        echo "Materialization files up-to-date" >&2
+
   build:
     name: HIE Build for ${{ matrix.os }}, GHC ${{ matrix.ghc }}, glibc ${{ matrix.glibc }}
     runs-on: ${{ matrix.os }}
+    needs: materialize-check
     strategy:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
@@ -23,18 +46,6 @@ jobs:
         name: all-hies
         extraPullNames: iohk
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-    - name: Make sure materializations are up-to-date
-      run: |
-        nix-build ci.nix -A materialize --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }}
-        ./result
-        # Fails if there are any changes
-        if ! [[ -z "$(git status --porcelain)" ]]; then
-          echo "The materialization script made some changes:" >&2
-          git status
-          echo "Run \$(nix-build ci.nix -A materializeScript) to apply them" >&2
-          exit 1
-        fi
-        echo "Materialization files up-to-date" >&2
     - name: Build HIE
       run: |
         drv=$(nix-instantiate ci.nix -A combined --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }})

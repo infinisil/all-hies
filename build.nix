@@ -57,6 +57,7 @@ let
       mkdir -p ${toString generatedDir}
       nix-hash --base32 --type sha256 ${haskellSet.stack-nix} > ${toString hashFile}
       ${pkgs.coreutils}/bin/cp -r --no-preserve=mode -T ${haskellSet.stack-nix} ${toString materializedDir}
+      cp ${sources.materializationId} ${toString generatedDir}/materialization-id
     '';
 
 in {
