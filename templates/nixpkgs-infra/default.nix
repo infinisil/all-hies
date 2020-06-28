@@ -1,7 +1,7 @@
 let
   nixpkgs = fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/tarball/22a81aa5fc15b2d41b12f7160a71cd4a9f3c3fa1";
-    sha256 = "14gx5fsqibdn2cxp7gymfrz2vcnwiwwjnxqlnysczz8dqihnrpa7";
+    url = "https://github.com/NixOS/nixpkgs/tarball/f8248ab6d9e69ea9c07950d73d48807ec595e923";
+    sha256 = "009i9j6mbq6i481088jllblgdnci105b2q4mscprdawg3knlyahk";
   };
   pkgs = import nixpkgs {
     config = {};
@@ -11,13 +11,14 @@ let
   };
   inherit (pkgs) lib;
 
-  set = pkgs.haskell.packages.ghc883.override (old: {
+  set = pkgs.haskell.packages.ghc865.override (old: {
     overrides = lib.composeExtensions old.overrides (hself: hsuper: {
       all-hies-template = hself.callCabal2nix "all-hies-template" (lib.sourceByRegex ./. [
         "^.*\\.hs$"
         "^.*\\.cabal$"
       ]) {
-        Cabal = hself.Cabal_3_2_0_0;
+        # Needs to match cabal-install version
+        Cabal = hself.Cabal_3_0_0_0;
       };
     });
   });
