@@ -10,7 +10,7 @@ in final: prev: {
           glibcName =
             if final.stdenv.hostPlatform.isDarwin
             # glibc matching doesn't matter for darwin
-            then "2.30"
+            then "glibc-2.30"
             else final.glibc.name;
           inherit sources;
           ghcVersion = hfinal.ghc.version;
@@ -28,7 +28,7 @@ in final: prev: {
         glibcName =
           if final.stdenv.hostPlatform.isDarwin
           # glibc matching doesn't matter for darwin
-          then "2.30"
+          then "glibc-2.30"
           else final.glibc.name;
         inherit sources;
         ghcVersion = args.ghc.version;
