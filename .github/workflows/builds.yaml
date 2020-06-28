@@ -37,7 +37,21 @@ jobs:
         echo "Materialization files up-to-date" >&2
     - name: Build HIE
       run: |
-        nix-build ci.nix -A combined --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }}
+        drv=$(nix-instantiate ci.nix -A combined --argstr ghcVersion ${{ matrix.ghc }} --argstr glibcVersion ${{ matrix.glibc }})
+        path=$(nix-store --query --outputs "$drv")
+        url=$(sed -r <<< "$path" \
+          -e 's|-.*|.narinfo|' \
+          -e 's|/nix/store|https://all-hies.cachix.org|')
+        code=$(curl -s -o /dev/null -w "%{http_code}\n" "$url")
+        case "$code" in
+          200)
+            echo "Derivation already in cache, not building it"
+            ;;
+          *)
+            echo "Derivation not in cache, building it"
+            nix-store -r "$path"
+            ;;
+        esac
 
   template_haskell-nix:
     name: Haskell.nix template for ${{ matrix.os }}
