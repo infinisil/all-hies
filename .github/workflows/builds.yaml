@@ -33,10 +33,11 @@ jobs:
     needs: materialize-check
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ macos-latest ]
+        #os: [ ubuntu-latest, macos-latest ]
         ghc: [ "8.8.3" ]
         #ghc: [ "8.6.5", "8.8.3" ]
-        glibc: [ "2.30" ]
+        glibc: [ "2.27", "2.30" ]
         #glibc: [ "2.27", "2.30" ]
     steps:
     - uses: actions/checkout@v2
@@ -78,7 +79,8 @@ jobs:
     needs: build
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ macos-latest ]
+        #os: [ ubuntu-latest, macos-latest ]
     defaults:
       run:
         working-directory: templates/haskell.nix
@@ -112,7 +114,8 @@ jobs:
     needs: build
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ macos-latest ]
+        #os: [ ubuntu-latest, macos-latest ]
     defaults:
       run:
         working-directory: templates/nixpkgs-infra
