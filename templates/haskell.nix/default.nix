@@ -5,9 +5,21 @@ let
   };
   haskellNix = import haskellNixSrc {};
 
+  all-hies = ../..;
+
+  # Use this version for your project instead
+  /*
+  all-hies = fetchTarball {
+	  # Insert the desired all-hies commit here
+    url = "https://github.com/input-output-hk/haskell.nix/tarball/000000000000000000000000000000000000000";
+		# Insert the correct hash after the first evaluation
+    sha256 = "0000000000000000000000000000000000000000000000000000";
+  };
+  */
+
   pkgs = import haskellNix.sources.nixpkgs-2003 (haskellNix.nixpkgsArgs // {
     overlays = haskellNix.nixpkgsArgs.overlays ++ [
-      (import ../../overlay.nix)
+      (import all-hies {}).overlay
     ];
   });
 

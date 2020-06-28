@@ -3,10 +3,23 @@ let
     url = "https://github.com/NixOS/nixpkgs/tarball/f8248ab6d9e69ea9c07950d73d48807ec595e923";
     sha256 = "009i9j6mbq6i481088jllblgdnci105b2q4mscprdawg3knlyahk";
   };
+
+  all-hies = ../..;
+
+  # Use this version for your project instead
+  /*
+  all-hies = fetchTarball {
+	  # Insert the desired all-hies commit here
+    url = "https://github.com/input-output-hk/haskell.nix/tarball/000000000000000000000000000000000000000";
+		# Insert the correct hash after the first evaluation
+    sha256 = "0000000000000000000000000000000000000000000000000000";
+  };
+  */
+
   pkgs = import nixpkgs {
     config = {};
     overlays = [
-      (import ../../overlay.nix)
+      (import all-hies {}).overlay
     ];
   };
   inherit (pkgs) lib;

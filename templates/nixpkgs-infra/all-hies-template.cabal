@@ -16,4 +16,5 @@ executable all-hies-template
   main-is:             Main.hs
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
+                     -- Cabal needed for HIEs cabal-helper
                      , Cabal
