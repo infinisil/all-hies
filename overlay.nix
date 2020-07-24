@@ -32,9 +32,8 @@ in final: prev: {
           else final.glibc.name;
         inherit sources;
         # compiler-nix-name is of the form 'ghc883'
-        ghcVersion = if args ? compiler-nix-name then
-          builtins.concatStringsSep "."
-            (builtins.match "ghc([0-9])([0-9])([0-9])" args.compiler-nix-name)
+        ghcVersion = if args ? compiler-nix-name
+                     then final.haskell-nix.compiler.${args.compiler-nix-name}.version
                      else args.ghc.version; # deprecated
       }).combined;
     };
