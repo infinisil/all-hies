@@ -31,7 +31,11 @@ in final: prev: {
           then "glibc-2.30"
           else final.glibc.name;
         inherit sources;
-        ghcVersion = args.ghc.version;
+        # compiler-nix-name is of the form 'ghc883'
+        ghcVersion = if args ? compiler-nix-name then
+          builtins.concatStringsSep "."
+            (builtins.match "ghc([0-9])([0-9])([0-9])" args.compiler-nix-name)
+                     else args.ghc.version; # deprecated
       }).combined;
     };
   };
