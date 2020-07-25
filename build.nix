@@ -13,6 +13,9 @@ let
     tightVersion = "${major}${minor}${patch}";
   };
 
+  supportedVersions = [ "8.6.5" "8.8.3" ];
+  unsupportedWarning = if lib.elem ghcVersion supportedVersions then lib.id else lib.warn "all-hies: GHC version ${ghcVersion} is not supported, no caches are available and the build will probably fail";
+
   stackArgs = {
     src = sources.hie.src;
     stackYaml = "stack-${version.dotVersion}.yaml";
@@ -60,6 +63,6 @@ let
       cp ${sources.materializationId} ${toString generatedDir}/materialization-id
     '';
 
-in {
+in unsupportedWarning {
   inherit combined materialize;
 }
