@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - haskell.nix
   pull_request:
 jobs:
   materialize-check:
