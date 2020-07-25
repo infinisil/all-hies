@@ -10,9 +10,9 @@ let
   # Use this version for your project instead
   /*
   all-hies = fetchTarball {
-	  # Insert the desired all-hies commit here
-    url = "https://github.com/input-output-hk/haskell.nix/tarball/000000000000000000000000000000000000000";
-		# Insert the correct hash after the first evaluation
+    # Insert the desired all-hies commit here
+    url = "https://github.com/infinisil/all-hies/tarball/000000000000000000000000000000000000000";
+    # Insert the correct hash after the first evaluation
     sha256 = "0000000000000000000000000000000000000000000000000000";
   };
   */
@@ -29,7 +29,7 @@ let
       name = "all-hies-template";
       src = ./.;
     };
-    ghc = pkgs.buildPackages.pkgs.haskell-nix.compiler.ghc883;
+    ghc = pkgs.haskell-nix.compiler.ghc883;
     modules = [{
       # Make Cabal reinstallable
       nonReinstallablePkgs = [ "rts" "ghc-heap" "ghc-prim" "integer-gmp" "integer-simple" "base" "deepseq" "array" "ghc-boot-th" "pretty" "template-haskell" "ghcjs-prim" "ghcjs-th" "ghc-boot" "ghc" "Win32" "array" "binary" "bytestring" "containers" "directory" "filepath" "ghc-boot" "ghc-compact" "ghc-prim" "hpc" "mtl" "parsec" "process" "text" "time" "transformers" "unix" "xhtml" "terminfo" ];

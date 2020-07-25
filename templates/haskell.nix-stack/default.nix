@@ -1,7 +1,7 @@
 let
   haskellNixSrc = fetchTarball {
-    url = "https://github.com/input-output-hk/haskell.nix/tarball/4219882774edb7a5e8382c3c6c421f2e907ee262";
-    sha256 = "05ymnlnyx9hnb9i3zpppijz32kwk1am1pabchkpl9s4dh0qkkhim";
+    url = "https://github.com/input-output-hk/haskell.nix/tarball/af5998fe8d6b201d2a9be09993f1b9fae74e0082";
+    sha256 = "0z5w99wkkpg2disvwjnsyp45w0bhdkrhvnrpz5nbwhhp21c71mbn";
   };
   haskellNix = import haskellNixSrc {};
 
@@ -10,9 +10,9 @@ let
   # Use this version for your project instead
   /*
   all-hies = fetchTarball {
-	  # Insert the desired all-hies commit here
-    url = "https://github.com/input-output-hk/haskell.nix/tarball/000000000000000000000000000000000000000";
-		# Insert the correct hash after the first evaluation
+    # Insert the desired all-hies commit here
+    url = "https://github.com/infinisil/all-hies/tarball/000000000000000000000000000000000000000";
+    # Insert the correct hash after the first evaluation
     sha256 = "0000000000000000000000000000000000000000000000000000";
   };
   */
@@ -37,7 +37,6 @@ let
 in set.all-hies-template.components.exes.all-hies-template // {
   env = set.shellFor {
     packages = p: [ p.all-hies-template ];
-    #exactDeps = true;
     tools = {
       hie = "unstable";
     };
@@ -46,5 +45,4 @@ in set.all-hies-template.components.exes.all-hies-template // {
       export HIE_HOOGLE_DATABASE=$(realpath "$(dirname "$(realpath "$(which hoogle)")")/../share/doc/hoogle/default.hoo")
     '';
   };
-  inherit pkgs;
 }

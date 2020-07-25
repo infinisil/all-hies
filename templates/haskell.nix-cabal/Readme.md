@@ -34,7 +34,7 @@ This can be done either using `nix-shell`:
 
 ```
 $ nix-shell
-[nix-shell:~/all-hies/templates/haskell.nix]$
+[nix-shell:~/all-hies/templates/haskell.nix-cabal]$
 ```
 
 Or automatically when you enter the project directory using [direnv](https://direnv.net/) or [lorri](https://github.com/target/lorri) (by running `lorri init` first). Note that entering the environment the first time will take quite some time due to how haskell.nix works.
@@ -51,7 +51,7 @@ In this environment HIE is available, which you can verify works with the `hie` 
 ```
 $ hie
 [...]
-/home/infinisil/all-hies/templates/haskell.nix/Main.hs: OK
+/home/infinisil/all-hies/templates/haskell.nix-cabal/Main.hs: OK
 ```
 
 The easiest way to get your editor to find HIE is to just start it in this environment:
