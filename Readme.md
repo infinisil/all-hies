@@ -53,7 +53,7 @@ $ cachix use all-hies
 
 Note that for haskell.nix in general, `cachix use iohk` saves a lot of building time if you use the same nixpkgs as IOHK's CI.
 
-See the [haskell.nix template](./templates/haskell.nix) for a fully working example including a working cabal version and a hoogle database.
+See the [haskell.nix stack template](./templates/haskell.nix-stack) or [haskell.nix cabal template](./templates/haskell.nix-cabal) for a fully working example including a working stack/cabal version and a hoogle database.
 
 ### nixpkgs Haskell infrastructure
 
@@ -100,4 +100,4 @@ Configuring the `all-hies` cachix can be done with [these instructions](https://
 $ cachix use all-hies
 ```
 
-See the [nixpkgs infra template](./templates/nixpkgs-infra) for a fully working example including a working cabal version and a hoogle database.
+See the [nixpkgs infra template](./templates/nixpkgs-cabal) for a fully working example including a working cabal version and a hoogle database.

@@ -1,5 +1,5 @@
 name: CI
-on: 
+on:
   push:
     branches:
       - master
@@ -79,8 +79,8 @@ jobs:
             ;;
         esac
 
-  template_haskell-nix:
-    name: Haskell.nix template for ${{ matrix.os }}
+  template_haskell-nix-stack:
+    name: Haskell.nix stack template for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     needs: build
     strategy:
@@ -88,7 +88,41 @@ jobs:
         os: [ ubuntu-latest, macos-latest ]
     defaults:
       run:
-        working-directory: templates/haskell.nix
+        working-directory: templates/haskell.nix-stack
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v10
+    - uses: cachix/cachix-action@09c0620ab018415cbf1e6792e1f415cf892879b5
+      with:
+        name: all-hies
+        extraPullNames: iohk
+    - name: Entering nix-shell
+      run: |
+        nix-shell --run "echo Successfully entered nix-shell"
+    - name: Call HIE
+      run: |
+        nix-shell --run "hie 2>&1 | tee /dev/stderr | grep 'Main.hs: OK'"
+    - name: Search hoogle
+      run: |
+        nix-shell --run "hoogle fromMaybe | grep Data.Maybe"
+    - name: Build and run with cabal
+      run: |
+        nix-shell --run "stack run"
+    - name: Build and run with Nix
+      run: |
+        nix-build
+        ./result/bin/all-hies-template
+
+  template_haskell-nix-cabal:
+    name: Haskell.nix cabal template for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+    defaults:
+      run:
+        working-directory: templates/haskell.nix-cabal
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v10
@@ -113,8 +147,8 @@ jobs:
         nix-build
         ./result/bin/all-hies-template
 
-  template_nixpkgs-infra:
-    name: Nixpkgs infra template for ${{ matrix.os }}
+  template_nixpkgs-cabal:
+    name: Nixpkgs cabal template for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     needs: build
     strategy:
@@ -122,7 +156,7 @@ jobs:
         os: [ ubuntu-latest, macos-latest ]
     defaults:
       run:
-        working-directory: templates/nixpkgs-infra
+        working-directory: templates/nixpkgs-cabal
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v10
