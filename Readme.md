@@ -10,7 +10,7 @@ If you just want to get started, see the [templates](./templates) for fully work
 
 ### haskell.nix Projects
 
-In short, to install HIE for your haskell.nix project, apply the all-hies nixpkgs overlay and add `{ hie = "unstable"; }` to the `tools` argument of [`shellFor`](https://input-output-hk.github.io/haskell.nix/reference/library/#shellfor). Finally, if you want to use the prebuilt binaries, use the `all-hies` cachix.
+In short, to install HIE for your haskell.nix project, apply the all-hies nixpkgs overlay and add `{ hie = "unstable"; }` to the `tools` argument of [`shellFor`](https://input-output-hk.github.io/haskell.nix/reference/library/#shellfor). If you want to use the prebuilt binaries, use the `all-hies` cachix. Read the rest of this section for more details.
 
 Applying the overlay can be done as follows in a recent haskell.nix version
 ```nix
@@ -30,7 +30,7 @@ let
     overlays = haskellNix.nixpkgsArgs.overlays ++ [
       (import all-hies {}).overlay
     ];
-  };
+  });
 
   /* ... */
 in /* ... */
@@ -57,7 +57,7 @@ See the [haskell.nix stack template](./templates/haskell.nix-stack) or [haskell.
 
 ### nixpkgs Haskell infrastructure
 
-In short, to install HIE for your project using nixpkgs Haskell infrastructure, apply the all-hies overlay and add the `hie` Haskell package to the `nativeBuildInputs` argument of `shellFor`. Finally, if you want to use the prebuilt binaries, use the `all-hies` cachix.
+In short, to install HIE for your project using nixpkgs Haskell infrastructure, apply the all-hies overlay and add the `hie` Haskell package to the `nativeBuildInputs` argument of `shellFor`. If you want to use the prebuilt binaries, use the `all-hies` cachix. Read the rest of this section for more details.
 
 Applying the overlay can be done as follows
 ```nix
