@@ -1,0 +1,21 @@
+name:                all-hies-template
+version:             0.1.0.0
+-- synopsis:
+-- description:
+-- homepage:
+-- license:
+-- license-file:        LICENSE
+-- author:
+-- maintainer:
+-- copyright:
+-- category:            Web
+build-type:          Simple
+cabal-version:       2.0
+
+executable all-hies-template
+  main-is:             Main.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     -- Cabal needed for HIEs cabal-helper, needs to match the
+                     -- cabal(-install) version in default.nix
+                     , Cabal == 3.2.0.0
