@@ -47,6 +47,7 @@ let
       name = "haskell-ide-engine-${version.dotVersion}-${sources.hie.version}";
       paths = [ hie hie-bios ];
       pathsToLink = [ "/bin" ];
+      postBuild = "ln -s hie $out/bin/hie-wrapper";
       inherit (hie) meta;
     }).overrideAttrs (old: {
       allowSubstitutes = true;
