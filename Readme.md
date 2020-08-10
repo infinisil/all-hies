@@ -85,7 +85,7 @@ let
 in /* ... */
 ```
 
-Adding HIE to the environment is done like this in your `shellFor` call
+Adding HIE to the environment is done like this in your `shellFor` call:
 ```nix
 shellFor {
   packages = p: [ p.my-package ];
@@ -93,6 +93,13 @@ shellFor {
     haskellPackages.hie
   ];
 }
+```
+
+If you don't use `shellFor`, you can change your Haskell environment derivation like this instead:
+```nix
+envWithHIE = env.overrideAttrs (old: {
+  nativeBuildInputs = old.nativeBuildInputs ++ [ haskellPackages.hie ];
+})
 ```
 
 Configuring the `all-hies` cachix can be done with [these instructions](https://all-hies.cachix.org/), or if you have cachix installed already:
