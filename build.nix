@@ -1,7 +1,7 @@
 { ghcVersion, glibcName }:
 let
   sources = import ./sources.nix;
-  pkgs = sources.glibcSpecificPkgs.${glibcName};
+  pkgs = sources.glibcSpecificPkgs.${glibcName} or (throw "all-hies: A nixpkgs with ${glibcName} is currently not supported. ");
   inherit (pkgs) lib;
 
   versionList = builtins.match "([0-9]+)\\.([0-9]+)\\.([0-9]+)" ghcVersion;
