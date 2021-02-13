@@ -1,3 +1,7 @@
+# Deprecated
+
+:warning: This project is deprecated. Refer to https://github.com/haskell/haskell-language-server instead, which is available from nixpkgs directly :warning:
+
 # Haskell IDE Engine for Nix
 
 This project provides cached Nix builds for [Haskell IDE Engine](https://github.com/haskell/haskell-ide-engine) for GHC 8.6.5 and 8.8.3.
